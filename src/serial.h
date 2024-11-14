@@ -1,9 +1,9 @@
 #ifndef SERIAL_H
 #define SERIAL_H
 
-#include <windows.h>
+#include <winsock2.h>
 
-void initSerial(const char *portName);
+void initUDP(const char *ip, int port);
 float readTemperature();
 
 #endif

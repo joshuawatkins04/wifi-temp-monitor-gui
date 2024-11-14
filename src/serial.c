@@ -1,26 +1,42 @@
 #include "serial.h"
 #include <stdio.h>
 
+#pragma comment(lib, "ws2_32.lib")
+
 HANDLE hSerial;
 
-void initSerial(const char *portName) {
-    hSerial = CreateFile(portName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
-    DCB dcbSerialParams = {0};
-    dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
-    GetCommState(hSerial, &dcbSerialParams);
-    dcbSerialParams.BaudRate = CBR_9600;
-    dcbSerialParams.ByteSize = 8;
-    dcbSerialParams.StopBits = ONESTOPBIT;
-    dcbSerialParams.Parity = NOPARITY;
-    SetCommState(hSerial, &dcbSerialParams);
+SOCKET udpSocket;
+struct sockaddr_in serverAddr, clientAddr;
+
+void initUDP(const char *ip, int port) {
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+    udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (udpSocket == INVALID_SOCKET) {
+        perror("Socket creation failed");
+        return;
+    }
+
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(port);
+    serverAddr.sin_addr.s_addr = inet_addr(ip);
+
+    bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+
+    u_long mode = 1;
+    ioctlsocket(udpSocket, FIONBIO, &mode);
 }
 
 float readTemperature() {
     char buffer[32];
-    DWORD bytesRead;
-    if (ReadFile(hSerial, buffer, sizeof(buffer) - 1, &bytesRead, NULL)) {
-        buffer[bytesRead] = '\0';
-        return atof(buffer);
+    int clientAddrLen = sizeof(clientAddr);
+    int bytesRead = recvfrom(udpSocket, buffer, sizeof(buffer) -1, 0, (struct sockaddr *)&clientAddr, &clientAddrLen);
+    if (bytesRead == SOCKET_ERROR) {
+        perror("recvfrom failed");
+        return 0.0;
     }
-    return 0.0;
+
+    buffer[bytesRead] = '\0';
+    return atof(buffer);
 }

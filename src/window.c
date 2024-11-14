@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "window.h"
 #include "serial.h"
+#include "window.h"
 #include "resource.h"
 
 #define WINDOW_TITLE "Temperature Monitor"
