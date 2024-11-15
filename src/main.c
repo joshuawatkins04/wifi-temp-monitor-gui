@@ -5,7 +5,7 @@
 HFONT hFont;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-    const char *ip = "127.0.0.1";
+    const char *ip = "192.168.0.37";
     int port = 5005;
     initUDP(ip, port);
 

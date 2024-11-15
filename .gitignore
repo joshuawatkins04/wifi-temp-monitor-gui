@@ -1,2 +1,3 @@
 /.vscode
 .gitignore
+/esp32/wifi_temp_monitor/secret.h
