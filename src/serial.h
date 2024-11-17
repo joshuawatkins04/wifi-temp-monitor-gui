@@ -4,6 +4,6 @@
 #include <winsock2.h>
 
 void initUDP(const char *ip, int port);
-float readTemperature();
+void readDhtData(float *temperature, float *humidity);
 
 #endif
