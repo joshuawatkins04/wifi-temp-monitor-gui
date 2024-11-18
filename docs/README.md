@@ -43,7 +43,7 @@ A simple Windows-based GUI application for monitoring temperature data over UDP,
 
 1. **Clone the Repository** (or copy the source files):
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/joshuawatkins04/wifi-temp-monitor-gui.git
    ```
 2. Compile the Source Code:
    Use a C compiler (e.g., GCC or MSVC) to compile the project.
