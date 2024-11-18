@@ -1,11 +1,40 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "serial.h"
 #include "window.h"
 #include "resource.h"
 
 HFONT hFont;
 
+int runBatchScript()
+{
+	const char *filePath = "C:\\Users\\joshu\\OneDrive\\Desktop\\Projects\\Arduino\\wifi-temp-monitor-gui\\autostart\\windows_autostart.bat";
+	int result = system(filePath);
+
+	if (result == 0)
+	{
+		printf("Startup batch file ran successfully.\n");
+	}
+	else
+	{
+		printf("Failed to run batch file. Error: %d\n", result);
+	}
+
+	return result;
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	// Debugging console
+	// AllocConsole();
+	// freopen("CONOUT$", "w", stdout);
+	// freopen("CONOUT$", "w", stderr);
+
+	if (runBatchScript() != 0)
+	{
+		printf("Continuing dispite error with creating batch file.\n");
+	}
+
 	const char *ip = "192.168.0.37";
 	int port = 5005;
 	initUDP(ip, port);
