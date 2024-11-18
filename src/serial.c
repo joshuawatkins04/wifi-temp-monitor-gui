@@ -1,7 +1,11 @@
 #include "serial.h"
+#include "windows.h"
 #include <stdio.h>
 
 #pragma comment(lib, "ws2_32.lib")
+
+extern char connectionStatus[64];
+extern int packetCounter;
 
 HANDLE hSerial;
 
@@ -42,6 +46,7 @@ void readDhtData(float *temperature, float *humidity)
 		if (error != WSAEWOULDBLOCK)
 		{
 			printf("recvfrom failed with error: %d\n", error);
+			strcpy(connectionStatus, "Error");
 		}
 		else
 		{
@@ -52,7 +57,17 @@ void readDhtData(float *temperature, float *humidity)
 
 	buffer[bytesRead] = '\0';
 	char *splitData = strchr(buffer, ',');
+	if (splitData == NULL)
+	{
+		printf("Insufficient data received.\n");
+		strcpy(connectionStatus, "Insufficient data");
+		return;
+	}
+
 	*splitData = '\0';
 	*temperature = atof(buffer);
 	*humidity = atof(splitData + 1);
+
+	strcpy(connectionStatus, "Connected");
+  packetCounter++;
 }

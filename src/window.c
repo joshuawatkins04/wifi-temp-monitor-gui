@@ -7,6 +7,8 @@
 
 static float globalTemperature = 0.0;
 static float globalHumidity = 0.0;
+int packetCounter = 0;
+char connectionStatus[64] = "Connecting...";
 
 extern HFONT hFont;
 extern HANDLE hSerial;
@@ -30,8 +32,8 @@ HWND createWindow(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	HWND hwnd = CreateWindowEx(
-			0, CLASS_NAME, WINDOW_TITLE, WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT, 300, 150,
+			0, CLASS_NAME, WINDOW_TITLE, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
+			CW_USEDEFAULT, CW_USEDEFAULT, 350, 160,
 			NULL, NULL, hInstance, NULL);
 
 	if (hwnd == NULL)
@@ -55,20 +57,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetBkColor(hdc, RGB(240, 240, 240));
 		SelectObject(hdc, hFont);
 
-		char temperatureText[64], humidityText[64];
-		sprintf(temperatureText, "Temperature: %.2f C", globalTemperature);
-		sprintf(humidityText, "Humidity: %.2f %%", globalHumidity);
-
 		SIZE textSize;
-		GetTextExtentPoint32(hdc, temperatureText, strlen(temperatureText), &textSize);
+		RECT clientRect;
+		GetClientRect(hwnd, &clientRect);
 
-		int x = (ps.rcPaint.right - textSize.cx) / 2;
-		int y = (ps.rcPaint.bottom - textSize.cy) / 4;
-		TextOut(hdc, x, y, temperatureText, strlen(temperatureText));
+		char buffer[128];
+		int screenWidth = clientRect.right - clientRect.left;
+		int y = 10;
 
-		GetTextExtentPoint32(hdc, humidityText, strlen(humidityText), &textSize);
-		y += textSize.cy + 20;
-		TextOut(hdc, x, y, humidityText, strlen(humidityText));
+		sprintf(buffer, "Packets: %d | %s", packetCounter, connectionStatus);
+		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
+		int x = (screenWidth - textSize.cx) / 2;
+		TextOut(hdc, x, y, buffer, strlen(buffer));
+
+		sprintf(buffer, "Temperature: %.2f C", globalTemperature);
+		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
+		x = (screenWidth - textSize.cx) / 2;
+		y += textSize.cy + 10;
+		TextOut(hdc, x, y, buffer, strlen(buffer));
+
+		sprintf(buffer, "Humidity: %.2f %%", globalHumidity);
+		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
+		x = (screenWidth - textSize.cx) / 2;
+		y += textSize.cy + 10;
+		TextOut(hdc,x, y, buffer, strlen(buffer));
 
 		EndPaint(hwnd, &ps);
 		break;
@@ -81,6 +93,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InvalidateRect(hwnd, NULL, TRUE);
 		break;
 	case WM_DESTROY:
+		WSACleanup();
 		CloseHandle(hSerial);
 		PostQuitMessage(0);
 		return 0;
