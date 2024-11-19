@@ -1,14 +1,7 @@
 #include <stdio.h>
 #include "serial.h"
 #include "window.h"
-#include "resource.h"
-
-#define WINDOW_TITLE "Temperature Monitor"
-
-static float globalTemperature = 0.0;
-static float globalHumidity = 0.0;
-int packetCounter = 0;
-char connectionStatus[64] = "Connecting...";
+#include "config.h"
 
 extern HFONT hFont;
 extern HANDLE hSerial;
@@ -104,4 +97,5 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void updateData()
 {
 	readDhtData(&globalTemperature, &globalHumidity);
+	publish_mqtt(globalTemperature, globalHumidity);
 }
