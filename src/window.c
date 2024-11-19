@@ -32,7 +32,7 @@ HWND createWindow(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	HWND hwnd = CreateWindowEx(
-			0, CLASS_NAME, WINDOW_TITLE, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
+			0, CLASS_NAME, WINDOW_TITLE, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 			CW_USEDEFAULT, CW_USEDEFAULT, 350, 160,
 			NULL, NULL, hInstance, NULL);
 
@@ -80,7 +80,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
 		x = (screenWidth - textSize.cx) / 2;
 		y += textSize.cy + 10;
-		TextOut(hdc,x, y, buffer, strlen(buffer));
+		TextOut(hdc, x, y, buffer, strlen(buffer));
 
 		EndPaint(hwnd, &ps);
 		break;
