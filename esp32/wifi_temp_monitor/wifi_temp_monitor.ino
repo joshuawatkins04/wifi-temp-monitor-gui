@@ -1,3 +1,10 @@
+/* For this program to work, you will need a config.h file with the following:
+ *   - const char *ssid = "WIFI NAME";
+ *   - const char *password = "WIFI PASSWORD";
+ *   - const char *sendAddress = "IP ADDRESS";
+ *   - const int sendPort = PORT;
+*/
+
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <DHT.h>
@@ -8,63 +15,75 @@
 WiFiUDP udp;
 DHT dht(DHT22_PIN, DHT22);
 
-float temperature, humidity, lastTemperature = 0, lastHumidity = 0;
-int checkValid = 0;
+float currentTemperature, currentHumidity, lastTemperature = 0.0, lastHumidity = 0.0;
+unsigned long lastUpdate = 0;
+const unsigned long updateInterval = 10000;
 
-void setup() {
-  // Serial.begin(9600);
-    
+void setup() 
+{
   dht.begin();
   delay(2000);
 
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(true);
   WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    delay(500);
+  }
+
   udp.begin(sendPort);
 }
 
-void loop() {
-  checkValid = getDhtReading();
+void loop() 
+{
+  if (millis() - lastUpdate >= updateInterval)
+  {
+    lastUpdate = millis();
+    checkWifiConnection();
+    if (getDhtReading() == 1)
+    {
+      if (absoluteValue(currentTemperature - lastTemperature) > 0.1 || absoluteValue(currentHumidity - lastHumidity) > 0.2) 
+      {
+        udp.beginPacket(sendAddress, sendPort);
+        udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
+        udp.endPacket();
 
-  if (checkValid == 1) {
-    if (temperature != lastTemperature || humidity != lastHumidity) {
-      char temperatureString[6];
-      char humidityString[6];
-      char packetString[15];
-
-      dtostrf(temperature, 5, 2, temperatureString);
-      dtostrf(humidity, 5, 2, humidityString);
-      snprintf(packetString, sizeof(packetString), "%s,%s", temperatureString, humidityString);
-      sendPacket(packetString);
-
-      // Serial.print("Sent data: ");
-      // Serial.println(packetString);
-
-      lastTemperature = temperature;
-      lastHumidity = humidity;
+        lastTemperature = currentTemperature;
+        lastHumidity = currentHumidity;
+      }
     }
-    delay(5000);
   }
 }
 
-void sendPacket(char message[]) {
-  udp.beginPacket(sendAddress, sendPort);
-  udp.print(message);
-  udp.endPacket();
+void checkWifiConnection()
+{
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      delay(500);
+    }
+  }
 }
 
-int getDhtReading() {
-  temperature = dht.readTemperature();
-  humidity = dht.readHumidity();
-
-  if (isnan(temperature) || isnan(humidity)) {
-    // Serial.println("### Reading DHT sensor failed! ###");
+int getDhtReading() 
+{
+  currentTemperature = dht.readTemperature();
+  currentHumidity = dht.readHumidity();
+  if (isnan(currentTemperature) || isnan(currentHumidity))
+  {
     return 0;
-  } else {
-    // Serial.print("Temp: ");
-    // Serial.print(temperature);
-    // Serial.print(" C ");
-    // Serial.print("Humidity: ");
-    // Serial.print(humidity);
-    // Serial.println("%");
+  }
+  else 
+  {
     return 1;
   }
+}
+
+float absoluteValue(float value) 
+{
+  return value < 0 ? -value : value;
 }
