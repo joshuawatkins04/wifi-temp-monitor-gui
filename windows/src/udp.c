@@ -1,6 +1,7 @@
 #include <winsock2.h>
 #include <stdio.h>
 #include "windows.h"
+#include "udp.h"
 #include "config.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -8,7 +9,7 @@
 HANDLE hSerial;
 
 SOCKET udpSocket;
-struct sockaddr_in serverAddr, clientAddr;
+struct sockaddr_in serverAddr, espAddr, iosAddr;
 
 void initUDP(const char *ip, int port)
 {
@@ -35,8 +36,8 @@ void initUDP(const char *ip, int port)
 void readDhtData(float *temperature, float *humidity)
 {
 	char buffer[32];
-	int clientAddrLen = sizeof(clientAddr);
-	int bytesRead = recvfrom(udpSocket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&clientAddr, &clientAddrLen);
+	int serverAddrLen = sizeof(serverAddr);
+	int bytesRead = recvfrom(udpSocket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&serverAddr, &serverAddrLen);
 
 	if (bytesRead == SOCKET_ERROR)
 	{
@@ -50,6 +51,7 @@ void readDhtData(float *temperature, float *humidity)
 	}
 
 	buffer[bytesRead] = '\0';
+	sendPacket(config.phoneIP, config.phonePort, buffer);
 	char *splitData = strchr(buffer, ',');
 	if (splitData == NULL)
 	{
@@ -64,4 +66,21 @@ void readDhtData(float *temperature, float *humidity)
 
 	strcpy(config.connectionStatus, "Connected");
 	config.packetCounter++;
+}
+
+void sendPacket(const char *ip, int port, const char *message)
+{
+	struct sockaddr_in destAddr;
+	destAddr.sin_family = AF_INET;
+	destAddr.sin_port = htons(port);
+	destAddr.sin_addr.s_addr = inet_addr(ip);
+
+	if (sendto(udpSocket, message, strlen(message), 0, (struct sockaddr *)&destAddr, sizeof(destAddr)) == SOCKET_ERROR)
+	{
+		printf("Send failed. Error: %d\n", WSAGetLastError());
+	}
+	else
+	{
+		printf("Message sent: %s\n", message);
+	}
 }

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
-#include "serial.h"
+#include "udp.h"
 #include "window.h"
 #include "config.h"
 #include "server.h"
@@ -9,6 +9,8 @@
 Config config = {
 		.ip = "192.168.0.37",
 		.port = 5005,
+		.phoneIP = "192.168.0.161",
+		.phonePort = 8082,
 		.globalTemperature = 0.0,
 		.globalHumidity = 0.0,
 		.packetCounter = 0,

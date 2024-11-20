@@ -7,6 +7,8 @@
 typedef struct
 {
   const char *ip;
+  const char *phoneIP;
+  int phonePort;
   int port;
   float globalTemperature;
   float globalHumidity;
