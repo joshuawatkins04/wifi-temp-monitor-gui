@@ -18,7 +18,7 @@ HFONT hFont;
 
 int runBatchScript()
 {
-	const char *filePath = "C:\\Users\\joshu\\OneDrive\\Desktop\\Projects\\Arduino\\wifi-temp-monitor-gui\\autostart\\windows_autostart.bat";
+	const char *filePath = "C:\\Users\\joshu\\OneDrive\\Desktop\\Projects\\Arduino\\wifi-temp-monitor-gui\\windows\\windows_autostart.bat";
 	int result = system(filePath);
 
 	if (result == 0)

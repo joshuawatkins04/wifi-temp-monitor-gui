@@ -1,7 +1,7 @@
 @echo off
 
 :: Location of the Project .exe file. Will be different for other PC's
-set EXE_PATH="C:\Users\joshu\OneDrive\Desktop\Projects\Arduino\wifi-temp-monitor-gui\TemperatureMonitor.exe"
+set EXE_PATH="C:\Users\joshu\OneDrive\Desktop\Projects\Arduino\wifi-temp-monitor-gui\windows\TemperatureMonitor.exe"
 
 :: Exact location of Startup folder for windows
 set SHORTCUT_PATH="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\TemperatureMonitor.lnk"
