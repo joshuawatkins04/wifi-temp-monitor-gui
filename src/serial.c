@@ -1,11 +1,9 @@
-#include "windows.h"
 #include <winsock2.h>
 #include <stdio.h>
+#include "windows.h"
+#include "config.h"
 
 #pragma comment(lib, "ws2_32.lib")
-
-extern char connectionStatus[64];
-extern int packetCounter;
 
 HANDLE hSerial;
 
@@ -46,11 +44,7 @@ void readDhtData(float *temperature, float *humidity)
 		if (error != WSAEWOULDBLOCK)
 		{
 			printf("recvfrom failed with error: %d\n", error);
-			strcpy(connectionStatus, "Error");
-		}
-		else
-		{
-			printf("No new data received.");
+			strcpy(config.connectionStatus, "Error");
 		}
 		return;
 	}
@@ -60,7 +54,7 @@ void readDhtData(float *temperature, float *humidity)
 	if (splitData == NULL)
 	{
 		printf("Insufficient data received.\n");
-		strcpy(connectionStatus, "Insufficient data");
+		strcpy(config.connectionStatus, "Insufficient data");
 		return;
 	}
 
@@ -68,6 +62,6 @@ void readDhtData(float *temperature, float *humidity)
 	*temperature = atof(buffer);
 	*humidity = atof(splitData + 1);
 
-	strcpy(connectionStatus, "Connected");
-  packetCounter++;
+	strcpy(config.connectionStatus, "Connected");
+	config.packetCounter++;
 }

@@ -58,18 +58,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int screenWidth = clientRect.right - clientRect.left;
 		int y = 10;
 
-		sprintf(buffer, "Packets: %d | %s", packetCounter, connectionStatus);
+		sprintf(buffer, "Packets: %d | %s", config.packetCounter, config.connectionStatus);
 		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
 		int x = (screenWidth - textSize.cx) / 2;
 		TextOut(hdc, x, y, buffer, strlen(buffer));
 
-		sprintf(buffer, "Temperature: %.2f C", globalTemperature);
+		sprintf(buffer, "Temperature: %.2f C", config.globalTemperature);
 		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
 		x = (screenWidth - textSize.cx) / 2;
 		y += textSize.cy + 10;
 		TextOut(hdc, x, y, buffer, strlen(buffer));
 
-		sprintf(buffer, "Humidity: %.2f %%", globalHumidity);
+		sprintf(buffer, "Humidity: %.2f %%", config.globalHumidity);
 		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
 		x = (screenWidth - textSize.cx) / 2;
 		y += textSize.cy + 10;
@@ -96,6 +96,5 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void updateData()
 {
-	readDhtData(&globalTemperature, &globalHumidity);
-	publish_mqtt(globalTemperature, globalHumidity);
+	readDhtData(&config.globalTemperature, &config.globalHumidity);
 }

@@ -1,15 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 #include "serial.h"
 #include "window.h"
 #include "config.h"
-#include "MQTTClient.h"
+#include "server.h"
 
-#define ADDRESS "tcp://192.168.0.37:1883"
-#define CLIENTID "TemperatureMonitor"
-#define TOPIC "home/temperature"
-#define QOS 1
-#define TIMEOUT 10000L
+Config config = {
+		.ip = "192.168.0.37",
+		.port = 5005,
+		.globalTemperature = 0.0,
+		.globalHumidity = 0.0,
+		.packetCounter = 0,
+		.connectionStatus = "Connecting..."};
 
 HFONT hFont;
 
@@ -30,50 +33,32 @@ int runBatchScript()
 	return result;
 }
 
-void publishMqtt(float temperature, float humidity) 
+void *begin_server_thread(void *arg)
 {
-	MQTTClient client;
-	rc = MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-
-	MQTTClient_conectOptions conn_opts = MQTTClient_connectOptions_initializer;
-	if (MQTTClient_connect(client, &conn_opts) != MQTTCLIENT_SUCCESS) 
-	{
-		printf("Failed to connect to MQTT broker.\n");
-		MQTTClient_destroy(&client);
-		return;
-	}
-
-	char payload[50];
-	sprintf(payload, "{\"Temperature\": %.2f, \"Humidity\": %.2f}", temperature, humidity);
-
-	MQTTClient_message pubmsg = MQTTClient_message_initializer;
-	pubmsg.payload = payload;
-	pubmsg.payloadlen = strlen(paylod);
-	pubmsg.qos = QOS;
-	pubmsg.retained = 0;
-
-	MQTTClient_deliveryToken token;
-	MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
-	printf("Published message: %s\n", payload);
-
-	MQTTClient_waitForCompletion(client, token, TIMEOUT);
-	MQTTClient_disconnect(client, TIMEOUT);
-	MQTTClient_destroy(&client);
+	start_server();
+	return NULL;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	// Debugging console
-	// AllocConsole();
-	// freopen("CONOUT$", "w", stdout);
-	// freopen("CONOUT$", "w", stderr);
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+
+	pthread_t server_thread;
+
+	if (pthread_create(&server_thread, NULL, begin_server_thread, NULL) != 0)
+	{
+		printf("Continuing dispite error with creating server thread.\n");
+	}
 
 	if (runBatchScript() != 0)
 	{
 		printf("Continuing dispite error with creating batch file.\n");
 	}
 
-	initUDP(ip, port);
+	initUDP(config.ip, config.port);
 
 	HWND hwnd = createWindow(hInstance, nCmdShow);
 	if (!hwnd)
