@@ -49,7 +49,7 @@ A simple Windows-based GUI application for monitoring temperature data over UDP,
 - Use a C compiler (e.g., GCC or MSVC) to compile the project.
 - In the terminal, make sure you are in the main project directory. E.g. C:/path-to-project/wifi-temp-monitor-gui/
 - Ensure the serial.h, window.h, and resource.h files are in the same directory as the source code.
-- Then, use the command: gcc src/main.c src/serial.c src/window.c assets/icon.o -o TemperatureMonitor -lgdi32 -lws2_32 -mwindows
+- Then, use the command: gcc src/main.c src/serial.c src/window.c src/server.c src/mongoose.c assets/icon.o -o TemperatureMonitor -lgdi32 -lws2_32 -mwindows -lpthread
 4. Run the Application:
    Make sure the compiled .exe file is in the location specified in  the windows_autostart.bat file.
    Double-click the .exe to launch the application.
