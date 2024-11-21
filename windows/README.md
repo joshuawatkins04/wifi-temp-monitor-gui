@@ -44,8 +44,7 @@ A simple Windows-based GUI application for monitoring temperature data over UDP,
    * In the terminal, navigate to the main project directory.  
    * Ensure the necessary header files (`serial.h`, `window.h`, `resource.h`) are in the same directory as the source code.  
    * Use the following command to compile:  
-     gcc src/main.c src/udp.c src/window.c src/server.c src/mongoose.c assets/icon.o 
-     -o TemperatureMonitor -lgdi32 -lws2_32 -mwindows -lpthread
+     gcc src/main.c src/udp.c src/window.c src/logs.c src/server.c src/mongoose.c assets/icon.o -o TemperatureMonitor -lgdi32 -lws2_32 -mwindows -lpthread
 3. **Run the Application**:  
    * Make sure the compiled `.exe` file is in the location specified in the `windows_autostart.bat` file.  
    * Double-click the `.exe` to launch the application.
