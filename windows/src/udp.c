@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "windows.h"
 #include "udp.h"
+#include "logs.h"
 #include "config.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -66,6 +67,8 @@ void readDhtData(float *temperature, float *humidity)
 
 	strcpy(config.connectionStatus, "Connected");
 	config.packetCounter++;
+
+	createLog(*temperature, *humidity);
 }
 
 void sendPacket(const char *ip, int port, const char *message)

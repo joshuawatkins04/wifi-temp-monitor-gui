@@ -3,8 +3,8 @@
 #include <pthread.h>
 #include "udp.h"
 #include "window.h"
-#include "config.h"
 #include "server.h"
+#include "config.h"
 
 Config config = {
 		.ip = "192.168.0.37",
