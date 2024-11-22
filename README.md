@@ -26,10 +26,6 @@ This repository hosts the source code for a WiFi Temperature Monitor system. The
 * **Windows**: Requires a PC running Windows 7 or later, with support for Win32 API.  
 * **iOS Device**: An iPhone or iPad running iOS 11 or later.
 
-### **License**
-
-This project is licensed under the MIT License.
-
 ### **Contributions**
 
 Contributions are welcome\! Please create a pull request if you have any improvements or suggestions.

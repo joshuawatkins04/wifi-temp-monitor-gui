@@ -47,14 +47,18 @@ A simple Windows-based GUI application for monitoring temperature data over UDP,
 ### **Installation**
 
 1. **Clone the Repository**:  
-   git clone https://github.com/joshuawatkins04/wifi-temp-monitor-gui.git  
-2. **Compile the Source Code**:  
+
+   **git clone https://github.com/joshuawatkins04/wifi-temp-monitor-gui.git**
+     
+3. **Compile the Source Code**:  
    * Use a C compiler (e.g., GCC or MSVC) to compile the project.  
    * Navigate to the main project directory in the terminal.  
    * Ensure the necessary header files (`udp.h`, `window.h`, `logs.h`) are in the same directory as the source code.  
-   * Compile the project using:  
-     gcc src/main.c src/udp.c src/window.c src/logs.c src/server.c src/mongoose.c assets/icon.o \-o TemperatureMonitor \-lgdi32 \-lws2\_32 \-mwindows \-lpthread  
-3. **Run the Application**:  
+   * Compile the project using:
+     
+     **gcc src/main.c src/udp.c src/window.c src/logs.c src/server.c src/mongoose.c assets/icon.o \-o TemperatureMonitor \-lgdi32 \-lws2\_32 \-mwindows \-lpthread**
+     
+4. **Run the Application**:  
    * Ensure the compiled `.exe` file is in the location specified in the `windows_autostart.bat` file.  
    * Double-click the `.exe` to launch the application.
 
@@ -98,12 +102,12 @@ This project includes a Python script (`graphing.py`) for visualising logged tem
 
 1. **Generate Log Files**: Run the `TemperatureMonitor.exe` program to create binary log files in the `logs/` directory.
 
-**Run the Graphing Script**: Navigate to the `tools/` directory and execute the Python script:  
-cd tools
+2. **Run the Graphing Script**: Navigate to the `windows` directory and execute the Python script:  
 
-2. python graphing.py ../logs/temperature\_log\_2024-11-20.bin  
-   Replace `temperature_log_2024-11-20.bin` with the desired log file.  
-3. **View the Output**: The script will generate graphs for temperature (°C) and humidity (%) over time.
+   **python tools/graphing.py logs/temperature_log_2024-11-20.bin**  
+   Replace `temperature_log_2024-11-20.bin` with the desired log file.
+    
+4. **View the Output**: The script will generate graphs for temperature (°C) and humidity (%) over time.
 
 ### **Sample Output**
 
