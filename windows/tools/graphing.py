@@ -42,7 +42,7 @@ def plot_data(data):
   plt.grid(True)
 
   plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-  plt.gca().xaxis.set_major_locator(mdates.MinuteLocator(interval=5))
+  plt.gca().xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
 
   # Humidity Graph
   plt.subplot(2, 1, 2)
@@ -52,7 +52,7 @@ def plot_data(data):
   plt.grid(True)
 
   plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-  plt.gca().xaxis.set_major_locator(mdates.MinuteLocator(interval=5))
+  plt.gca().xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
 
   plt.xlabel("Timestamp")
   plt.tight_layout()
