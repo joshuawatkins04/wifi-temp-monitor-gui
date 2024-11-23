@@ -4,6 +4,7 @@ from datetime import datetime
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import numpy as np
 
 entry_format = "qff"
 entry_size = struct.calcsize(entry_format)
@@ -58,12 +59,43 @@ def plot_data(data):
   plt.tight_layout()
   plt.show()
 
+def calculate_statistics(data):
+  if not data:
+    print("No data available for analysis")
+    return
+  
+  temperatures = [entry[1] for entry in data]
+  humidities = [entry[2] for entry in data]
+
+  temperature_mean = np.mean(temperatures)
+  temperature_median = np.median(temperatures)
+  temperature_min = np.min(temperatures)
+  temperature_max = np.max(temperatures)
+
+  humidity_mean = np.mean(humidities)
+  humidity_median = np.median(humidities)
+  humidity_min = np.min(humidities)
+  humidity_max = np.max(humidities)
+
+  print("\n--- Temperature Statistics ---")
+  print(f"Mean: {temperature_mean:.2f} °C")
+  print(f"Median: {temperature_median:.2f} °C")
+  print(f"Min: {temperature_min:.2f} °C")
+  print(f"Max: {temperature_max:.2f} °C")
+
+  print("\n--- Humidity Statistics ---")
+  print(f"Mean: {humidity_mean:.2f} %")
+  print(f"Median: {humidity_median:.2f} %")
+  print(f"Min: {humidity_min:.2f} %")
+  print(f"Max: {humidity_max:.2f} %\n")
+
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description="Analyse and plot temperature and humidity data")
   parser.add_argument("logfile", type=str, help="Path to the binary log file")
 
   args = parser.parse_args()
   log_file_path = args.logfile
-
   data = read_binary_log(log_file_path)
+  
+  calculate_statistics(data)
   plot_data(data)
