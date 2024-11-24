@@ -1,3 +1,4 @@
+import SwiftUI
 import Network
 
 class UDPReceiver: ObservableObject {
@@ -49,7 +50,7 @@ class UDPReceiver: ObservableObject {
           self.humidity = String(format: "%.2f%%", humidityValue)
         }
       } else {
-        printf("Invalid message format: \(message)")
+        print("Invalid message format: \(message)")
       }
   }
 }
