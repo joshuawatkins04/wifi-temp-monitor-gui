@@ -6,8 +6,9 @@ class UDPReceiver: ObservableObject {
   @Published var humidity: String = "--"
 
   private var listener: NWListener?
+  private var connection: NWConnection?
 
-  init(port: UInt16 = 8082) {
+  init(port: UInt16 = 12345) {
     startListening(port: port)
   }
 
@@ -31,11 +32,30 @@ class UDPReceiver: ObservableObject {
     connection.receiveMessage { (data, _, isComplete, error) in
       if let data = data, let message = String(data: data, encoding: .utf8) {
         print("Received: \(message)")
-        self.parseMessage(message)
+        self.handleMessage(message, from: connection)
       }
       if isComplete {
         connection.cancel()
       }
+    }
+  }
+
+  private handleMessage(_ message: String, from connection: NWConnection) {
+    let requestMessage = "DISCOVERY_REQUEST"
+    let responseMessage = "IOS_RESPONSE"
+
+    if message == requestMessage {
+      print("Discovery request received. Sending response...")
+      let responseData = responseMessage.data(using: .utf8) ?? Data()
+      connection.send(content: repsonseData, completion: .contentProcessed { error in 
+        if let error = error {
+          print("Failed to send response: \(error.localizedDescription)")
+        } else {
+          print("Response sent: \(responseMessage)")
+        }
+      })
+    } else {
+      self.parseMessage(message)
     }
   }
 
