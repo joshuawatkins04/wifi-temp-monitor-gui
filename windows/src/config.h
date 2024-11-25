@@ -6,16 +6,22 @@
 
 typedef struct
 {
-  const char *ip;
-  const char *phoneIP;
-  int phonePort;
-  int port;
   float globalTemperature;
   float globalHumidity;
   int packetCounter;
   char connectionStatus[24];
 } Config;
 
+typedef struct
+{
+  char id[32];
+  char ip[16];
+  int port;
+  int initialised;
+} Device;
+
 extern Config config;
+extern Device devices[];
+extern int numDevices;
 
 #endif

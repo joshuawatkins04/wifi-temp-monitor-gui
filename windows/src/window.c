@@ -96,5 +96,5 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void updateData()
 {
-	readDhtData(&config.globalTemperature, &config.globalHumidity);
+	readDhtData(&config.globalTemperature, &config.globalHumidity, devices);
 }

@@ -7,14 +7,17 @@
 #include "config.h"
 
 Config config = {
-		.ip = "192.168.0.37",
-		.port = 5005,
-		.phoneIP = "192.168.0.161",
-		.phonePort = 8082,
 		.globalTemperature = 0.0,
 		.globalHumidity = 0.0,
 		.packetCounter = 0,
-		.connectionStatus = "Connecting..."};
+		.connectionStatus = "Connecting...",
+};
+
+Device devices[] = {
+	{"ESP_RESPONSE", "", 0, 0},
+	{"IOS_RESPONSE", "", 0, 0},
+};
+int	numDevices = sizeof(devices) / sizeof(devices[0]);
 
 HFONT hFont;
 
@@ -48,19 +51,54 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONOUT$", "w", stderr);
 
+	const int discoveryPort = 12345;
+	const int maxRetries = 10;
+	const int retryInterval = 2;
+
+	printf("Starting device discovery...\n");
+
+	for (int attempt = 1; attempt <= maxRetries; attempt++)
+	{
+		printf("Broadcasting discovery message (Attempt %d)...\n", attempt);
+		sendBroadcast("DISCOVERY_REQUEST", discoveryPort);
+
+		listenForResponses(discoveryPort, devices); 
+
+		int allInitialised = 1;
+		for (int i = 0; i < numDevices; i++)
+		{
+			if (!devices[i].initialised)
+			{
+				allInitialised = 0;
+				break;
+			}
+		}
+		if (allInitialised)
+		{
+			printf("All devices initialised!\n");
+			break;
+		}
+
+		printf("Waiting for %d seconds before retrying...\n", retryInterval);
+		Sleep(retryInterval * 1000);
+	}
+
+	for (int i = 0; i < numDevices; i++)
+	{
+		printf("%s %s\n", devices[i].id, devices[i].ip ? "initialised" : "not initialised");
+	}
+
 	pthread_t server_thread;
 
 	if (pthread_create(&server_thread, NULL, begin_server_thread, NULL) != 0)
 	{
-		printf("Continuing dispite error with creating server thread.\n");
+		printf("Continuing despite error with creating server thread.\n");
 	}
 
 	if (runBatchScript() != 0)
 	{
-		printf("Continuing dispite error with creating batch file.\n");
+		printf("Continuing despite error with creating batch file.\n");
 	}
-
-	initUDP(config.ip, config.port);
 
 	HWND hwnd = createWindow(hInstance, nCmdShow);
 	if (!hwnd)
