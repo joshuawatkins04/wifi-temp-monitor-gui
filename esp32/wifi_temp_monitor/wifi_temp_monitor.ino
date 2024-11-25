@@ -16,11 +16,14 @@ WiFiUDP udp;
 DHT dht(DHT22_PIN, DHT22);
 
 float currentTemperature, currentHumidity, lastTemperature = 0.0, lastHumidity = 0.0;
+int connected = 0;
+char incomingPacket[255];
 unsigned long lastUpdate = 0;
 const unsigned long updateInterval = 10000;
 
 void setup() 
 {
+  Serial.begin(9600);
   dht.begin();
   delay(2000);
 
@@ -38,20 +41,32 @@ void setup()
 
 void loop() 
 {
-  if (millis() - lastUpdate >= updateInterval)
+  if (connected == 0)
   {
-    lastUpdate = millis();
-    checkWifiConnection();
-    if (getDhtReading() == 1)
+    receivePacket();
+    if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
     {
-      if (absoluteValue(currentTemperature - lastTemperature) > 0.1 || absoluteValue(currentHumidity - lastHumidity) > 0.2) 
+      sendPacket("ESP_RESPONSE", sendAddress, sendPort);
+      connected = 1;
+    }
+  }
+  else 
+  {
+    if (millis() - lastUpdate >= updateInterval)
+    {
+      lastUpdate = millis();
+      checkWifiConnection();
+      if (getDhtReading() == 1)
       {
-        udp.beginPacket(sendAddress, sendPort);
-        udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
-        udp.endPacket();
+        if (absoluteValue(currentTemperature - lastTemperature) > 0.1 || absoluteValue(currentHumidity - lastHumidity) > 0.2) 
+        {
+          udp.beginPacket(sendAddress, sendPort);
+          udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
+          udp.endPacket();
 
-        lastTemperature = currentTemperature;
-        lastHumidity = currentHumidity;
+          lastTemperature = currentTemperature;
+          lastHumidity = currentHumidity;
+        }
       }
     }
   }
@@ -66,6 +81,16 @@ void checkWifiConnection()
     {
       delay(500);
     }
+  }
+}
+
+void checkDeviceConnection()
+{
+  receivePacket();
+  if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
+  {
+    sendPacket("ESP_RESPONSE", sendAddress, sendPort);
+    connected = 1;
   }
 }
 
@@ -86,4 +111,27 @@ int getDhtReading()
 float absoluteValue(float value) 
 {
   return value < 0 ? -value : value;
+}
+
+void sendPacket(const char *str, IPAddress remoteIP, unsigned int remotePort)
+{
+  udp.beginPacket(remoteIP, remotePort);
+  udp.write((uint8_t *)str, strlen(str));
+  udp.endPacket();
+  Serial.printf("Sent a UDP packet to %s, port %d\n", remoteIP.toString().c_str(), remotePort);
+}
+
+void receivePacket()
+{
+  int packetSize = udp.parsePacket();
+  if (packetSize)
+  {
+    int len = udp.read(incomingPacket, 255);
+    if (len > 0)
+    {
+      incomingPacket[len] = 0;
+    }
+    Serial.printf("Received %d bytes from %s, port %d\n", packetSize, udp.remoteIP().toString().c_str(), udp.remotePort());
+    Serial.printf("UDP packet contents: %s\n", incomingPacket);
+  }
 }
