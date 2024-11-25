@@ -1,0 +1,557 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		085484412CF2EDBA00149195 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 085484282CF2EDB800149195 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0854842F2CF2EDB800149195;
+			remoteInfo = TempMonitorApp;
+		};
+		0854844B2CF2EDBA00149195 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 085484282CF2EDB800149195 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0854842F2CF2EDB800149195;
+			remoteInfo = TempMonitorApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		085484302CF2EDB800149195 /* TempMonitorApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TempMonitorApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		085484402CF2EDBA00149195 /* TempMonitorAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TempMonitorAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0854844A2CF2EDBA00149195 /* TempMonitorAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TempMonitorAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		085484322CF2EDB800149195 /* TempMonitorApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TempMonitorApp;
+			sourceTree = "<group>";
+		};
+		085484432CF2EDBA00149195 /* TempMonitorAppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TempMonitorAppTests;
+			sourceTree = "<group>";
+		};
+		0854844D2CF2EDBA00149195 /* TempMonitorAppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TempMonitorAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0854842D2CF2EDB800149195 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0854843D2CF2EDBA00149195 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		085484472CF2EDBA00149195 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		085484272CF2EDB800149195 = {
+			isa = PBXGroup;
+			children = (
+				085484322CF2EDB800149195 /* TempMonitorApp */,
+				085484432CF2EDBA00149195 /* TempMonitorAppTests */,
+				0854844D2CF2EDBA00149195 /* TempMonitorAppUITests */,
+				085484312CF2EDB800149195 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		085484312CF2EDB800149195 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				085484302CF2EDB800149195 /* TempMonitorApp.app */,
+				085484402CF2EDBA00149195 /* TempMonitorAppTests.xctest */,
+				0854844A2CF2EDBA00149195 /* TempMonitorAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0854842F2CF2EDB800149195 /* TempMonitorApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 085484542CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorApp" */;
+			buildPhases = (
+				0854842C2CF2EDB800149195 /* Sources */,
+				0854842D2CF2EDB800149195 /* Frameworks */,
+				0854842E2CF2EDB800149195 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				085484322CF2EDB800149195 /* TempMonitorApp */,
+			);
+			name = TempMonitorApp;
+			packageProductDependencies = (
+			);
+			productName = TempMonitorApp;
+			productReference = 085484302CF2EDB800149195 /* TempMonitorApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0854843F2CF2EDBA00149195 /* TempMonitorAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 085484572CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppTests" */;
+			buildPhases = (
+				0854843C2CF2EDBA00149195 /* Sources */,
+				0854843D2CF2EDBA00149195 /* Frameworks */,
+				0854843E2CF2EDBA00149195 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				085484422CF2EDBA00149195 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				085484432CF2EDBA00149195 /* TempMonitorAppTests */,
+			);
+			name = TempMonitorAppTests;
+			packageProductDependencies = (
+			);
+			productName = TempMonitorAppTests;
+			productReference = 085484402CF2EDBA00149195 /* TempMonitorAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		085484492CF2EDBA00149195 /* TempMonitorAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0854845A2CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppUITests" */;
+			buildPhases = (
+				085484462CF2EDBA00149195 /* Sources */,
+				085484472CF2EDBA00149195 /* Frameworks */,
+				085484482CF2EDBA00149195 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0854844C2CF2EDBA00149195 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0854844D2CF2EDBA00149195 /* TempMonitorAppUITests */,
+			);
+			name = TempMonitorAppUITests;
+			packageProductDependencies = (
+			);
+			productName = TempMonitorAppUITests;
+			productReference = 0854844A2CF2EDBA00149195 /* TempMonitorAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		085484282CF2EDB800149195 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					0854842F2CF2EDB800149195 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					0854843F2CF2EDBA00149195 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = 0854842F2CF2EDB800149195;
+					};
+					085484492CF2EDBA00149195 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = 0854842F2CF2EDB800149195;
+					};
+				};
+			};
+			buildConfigurationList = 0854842B2CF2EDB800149195 /* Build configuration list for PBXProject "TempMonitorApp" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 085484272CF2EDB800149195;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 085484312CF2EDB800149195 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0854842F2CF2EDB800149195 /* TempMonitorApp */,
+				0854843F2CF2EDBA00149195 /* TempMonitorAppTests */,
+				085484492CF2EDBA00149195 /* TempMonitorAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0854842E2CF2EDB800149195 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0854843E2CF2EDBA00149195 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		085484482CF2EDBA00149195 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0854842C2CF2EDB800149195 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0854843C2CF2EDBA00149195 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		085484462CF2EDBA00149195 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		085484422CF2EDBA00149195 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0854842F2CF2EDB800149195 /* TempMonitorApp */;
+			targetProxy = 085484412CF2EDBA00149195 /* PBXContainerItemProxy */;
+		};
+		0854844C2CF2EDBA00149195 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0854842F2CF2EDB800149195 /* TempMonitorApp */;
+			targetProxy = 0854844B2CF2EDBA00149195 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		085484522CF2EDBA00149195 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		085484532CF2EDBA00149195 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		085484552CF2EDBA00149195 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TempMonitorApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		085484562CF2EDBA00149195 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TempMonitorApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		085484582CF2EDBA00149195 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TempMonitorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TempMonitorApp";
+			};
+			name = Debug;
+		};
+		085484592CF2EDBA00149195 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TempMonitorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TempMonitorApp";
+			};
+			name = Release;
+		};
+		0854845B2CF2EDBA00149195 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TempMonitorApp;
+			};
+			name = Debug;
+		};
+		0854845C2CF2EDBA00149195 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TempMonitorApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0854842B2CF2EDB800149195 /* Build configuration list for PBXProject "TempMonitorApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				085484522CF2EDBA00149195 /* Debug */,
+				085484532CF2EDBA00149195 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		085484542CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				085484552CF2EDBA00149195 /* Debug */,
+				085484562CF2EDBA00149195 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		085484572CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				085484582CF2EDBA00149195 /* Debug */,
+				085484592CF2EDBA00149195 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0854845A2CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0854845B2CF2EDBA00149195 /* Debug */,
+				0854845C2CF2EDBA00149195 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 085484282CF2EDB800149195 /* Project object */;
+}

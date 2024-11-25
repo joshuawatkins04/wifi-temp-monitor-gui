@@ -24,7 +24,7 @@ struct ContentView: View {
     }
     .padding()
     .onAppear {
-      udpReceiver.startListening(port: 8080)
+      udpReceiver.startListening(port: 12345)
     }
   }
 }

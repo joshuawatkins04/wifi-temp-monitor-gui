@@ -40,14 +40,14 @@ class UDPReceiver: ObservableObject {
     }
   }
 
-  private handleMessage(_ message: String, from connection: NWConnection) {
+  private func handleMessage(_ message: String, from connection: NWConnection) {
     let requestMessage = "DISCOVERY_REQUEST"
     let responseMessage = "IOS_RESPONSE"
 
     if message == requestMessage {
       print("Discovery request received. Sending response...")
       let responseData = responseMessage.data(using: .utf8) ?? Data()
-      connection.send(content: repsonseData, completion: .contentProcessed { error in 
+      connection.send(content: responseData, completion: .contentProcessed { error in 
         if let error = error {
           print("Failed to send response: \(error.localizedDescription)")
         } else {
