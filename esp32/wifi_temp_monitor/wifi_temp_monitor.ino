@@ -43,12 +43,14 @@ void loop()
 {
   if (connected == 0)
   {
+    Serial.println("Waiting for packet");
     receivePacket();
     if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
     {
       sendPacket("ESP_RESPONSE", sendAddress, sendPort);
       connected = 1;
     }
+    delay(1000);
   }
   else 
   {
@@ -134,4 +136,5 @@ void receivePacket()
     Serial.printf("Received %d bytes from %s, port %d\n", packetSize, udp.remoteIP().toString().c_str(), udp.remotePort());
     Serial.printf("UDP packet contents: %s\n", incomingPacket);
   }
+  Serial.println("Packet not received.");
 }
