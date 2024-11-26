@@ -35,7 +35,9 @@ class UDPReceiver: ObservableObject {
         self.handleMessage(message, from: connection)
       }
       if isComplete {
-        connection.cancel()
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+          connection.cancel()
+        }
       }
     }
   }
@@ -43,28 +45,40 @@ class UDPReceiver: ObservableObject {
   private func handleMessage(_ message: String, from connection: NWConnection) {
     let requestMessage = "DISCOVERY_REQUEST"
     let responseMessage = "IOS_RESPONSE"
-
+    let targetPort: NWEndpoint.Port = 12345
+      
     if message == requestMessage {
       print("Discovery request received. Sending response...")
-      let responseData = responseMessage.data(using: .utf8) ?? Data()
-      connection.send(content: responseData, completion: .contentProcessed { error in 
-        if let error = error {
-          print("Failed to send response: \(error.localizedDescription)")
-        } else {
-          print("Response sent: \(responseMessage)")
-        }
-      })
+      
+      if case let .hostPort(host, _) = connection.endpoint {
+        print("Extracted host: \(host)")
+        let newConnection = NWConnection(host: host, port: targetPort, using: .udp)
+        newConnection.start(queue: .main)
+        
+        let responseData = responseMessage.data(using: .utf8) ?? Data()
+        newConnection.send(content: responseData, completion: .contentProcessed { error in
+          if let error = error {
+            print("Failed to send response: \(error.localizedDescription)")
+          } else {
+            print("Response sent: \(responseMessage) to \(host):\(targetPort)")
+          }
+          newConnection.cancel()
+        })
+      } else {
+        print("Failed to extract host from connection endpoint.")
+      }
     } else {
       self.parseMessage(message)
     }
   }
 
   private func parseMessage(_ message: String) {
+    print("Received: message: \(message)")
     let components = message.split(separator: ",")
     
     if components.count == 2,
       let temperatureValue = Double(components[0].trimmingCharacters(in: .whitespaces)),
-      let humidityValue = Double(components[0].trimmingCharacters(in: .whitespaces)) {
+      let humidityValue = Double(components[1].trimmingCharacters(in: .whitespaces)) {
         DispatchQueue.main.async {
           self.temperature = String(format: "%.2f°C", temperatureValue)
           self.humidity = String(format: "%.2f%%", humidityValue)
