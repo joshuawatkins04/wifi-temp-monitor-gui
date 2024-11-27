@@ -19,7 +19,10 @@ float currentTemperature, currentHumidity, lastTemperature = 0.0, lastHumidity =
 int connected = 0;
 char incomingPacket[255];
 unsigned long lastUpdate = 0;
+unsigned long lastHeartbeatUpdate = 0;
 const unsigned long updateInterval = 10000;
+const unsigned long heartbeartInterval = 3000;
+int failCount = 0;
 
 void setup() 
 {
@@ -41,9 +44,9 @@ void setup()
 
 void loop() 
 {
+  // Check if connected to Windows program
   if (connected == 0)
   {
-    Serial.println("Waiting for packet");
     receivePacket();
     if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
     {
@@ -52,23 +55,42 @@ void loop()
     }
     delay(1000);
   }
-  else 
-  {
-    if (millis() - lastUpdate >= updateInterval)
-    {
-      lastUpdate = millis();
-      checkWifiConnection();
-      if (getDhtReading() == 1)
-      {
-        if (absoluteValue(currentTemperature - lastTemperature) > 0.1 || absoluteValue(currentHumidity - lastHumidity) > 0.2) 
-        {
-          udp.beginPacket(sendAddress, sendPort);
-          udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
-          udp.endPacket();
 
-          lastTemperature = currentTemperature;
-          lastHumidity = currentHumidity;
-        }
+  // Heartbeat mechanism
+  if (millis() - lastHeartbeatUpdate >= heartbeartInterval)
+  {
+    lastHeartbeatUpdate = millis();
+    receivePacket();
+    if (strcmp(incomingPacket, "HEARTBEAT") != 0)
+    {
+      failCount++;
+      if (failCount >= 3)
+      {
+        connected = 0;
+        Serial.println("Lost connection to Windows program.");
+      }
+    }
+    else
+    {
+      sendPacket("HEARTBEAT_ACK", sendAddress, sendPort);
+      failCount = 0;
+    }
+  }
+
+  // Update and send sensor data
+  if (millis() - lastUpdate >= updateInterval)
+  {
+    checkWifiConnection();
+    if (getDhtReading() == 1)
+    {
+      if (absoluteValue(currentTemperature - lastTemperature) > 0.1 || absoluteValue(currentHumidity - lastHumidity) > 0.2) 
+      {
+        udp.beginPacket(sendAddress, sendPort);
+        udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
+        udp.endPacket();
+
+        lastTemperature = currentTemperature;
+        lastHumidity = currentHumidity;
       }
     }
   }
@@ -135,6 +157,7 @@ void receivePacket()
     }
     Serial.printf("Received %d bytes from %s, port %d\n", packetSize, udp.remoteIP().toString().c_str(), udp.remotePort());
     Serial.printf("UDP packet contents: %s\n", incomingPacket);
+    return;
   }
   Serial.println("Packet not received.");
 }
