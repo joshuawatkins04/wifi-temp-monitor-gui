@@ -20,18 +20,21 @@ Config config = {
 };
 
 Device devices[] = {
-		{"ESP_RESPONSE", "", 0, 0},
-		{"IOS_RESPONSE", "", 0, 0},
+		{"ESP_RESPONSE", "", 0, DEVICE_UNINITIALISED},
+		{"IOS_RESPONSE", "", 0, DEVICE_UNINITIALISED},
 };
+
 int numDevices = sizeof(devices) / sizeof(devices[0]);
 pthread_mutex_t devicesMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t configMutex = PTHREAD_MUTEX_INITIALIZER;
+volatile int running = 1;
 int allDevicesInitialised = 0;
 
 HFONT hFont;
 
-void *sendPackets(void *args)
+void *sendThread(void *args)
 {
-	while (!allDevicesInitialised)
+	while (running && !allDevicesInitialised)
 	{
 		for (int i = START_IP; i <= END_IP; i++)
 		{
@@ -39,26 +42,26 @@ void *sendPackets(void *args)
 			snprintf(targetIP, sizeof(targetIP), "%s.%d", SUBNET, i);
 			if (strcmp(targetIP, LOCAL_IP) != 0)
 			{
-				sendDirect("DISCOVERY_REQUEST", targetIP, DISCORVERY_PORT);
+				sendPacket("DISCOVERY_REQUEST", targetIP, DISCORVERY_PORT);
 			}
 			Sleep(100);
 		}
 		Sleep(500);
 	}
-	printf("[DEBUG] All devices initialized. Stopping sendPackets thread.\n");
+	printf("Stopping sendPackets thread...\n");
 	return NULL;
 }
 
-void *listenResponses(void *args)
+void *listenThread(void *args)
 {
-	while (!allDevicesInitialised)
+	while (running && !allDevicesInitialised)
 	{
 		listenForResponses(DISCORVERY_PORT, devices);
 		pthread_mutex_lock(&devicesMutex);
 		int initialisedCount = 0;
 		for (int i = 0; i < numDevices; i++)
 		{
-			if (devices[i].initialised)
+			if (devices[i].status == DEVICE_INITIALISED)
 			{
 				initialisedCount++;
 			}
@@ -66,6 +69,72 @@ void *listenResponses(void *args)
 		allDevicesInitialised = (initialisedCount == numDevices);
 		pthread_mutex_unlock(&devicesMutex);
 	}
+	printf("Stopping listenResponses thread...\n");
+	return NULL;
+}
+
+void *updateThread(void *args)
+{
+	printf("Starting update thread...\n");
+	HWND hwnd = (HWND)args;
+	while (running)
+	{
+		pthread_mutex_lock(&configMutex);
+		readDhtData(&config.globalTemperature, &config.globalHumidity, devices);
+		pthread_mutex_unlock(&configMutex);
+		InvalidateRect(hwnd, NULL, TRUE);
+		Sleep(1000);
+	}
+	return NULL;
+}
+
+void *heartbeatThread(void *args)
+{
+	Device *devices = (Device *)args;
+	const int heartbeatInterval = 3000;
+	int failCount = 0;
+
+	while (running)
+	{
+		for (int i = 0; i < numDevices; i++)
+		{
+			if (devices[i].status != DEVICE_INITIALISED)
+			{
+				continue;
+			}
+
+			sendPacket("HEARTBEAT", devices[i].ip, devices[i].port);
+			printf("Sent HEARTBEAT to %s:%d\n", devices[i].ip, devices[i].port);
+
+			char buffer[50];
+			struct sockaddr_in clientAddr;
+			int bytesRead = receivePacket(buffer, sizeof(buffer), &clientAddr);
+			if (bytesRead > 0 && strcmp("HEARTBEAR_ACK", buffer) == 0)
+			{
+				printf("Received HEARTBEAT_ACK from %s:%d\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+				failCount = 0;
+			}
+			else
+			{
+				failCount++;
+				printf("Missed heartbeat acknowledgment for %s. Missed count: %d\n", devices->id, failCount);
+
+				if (failCount >= 3)
+				{
+					printf("Too many missed heartbeats. Marking %s as uninitialized.\n", devices->id);
+					devices->status = DEVICE_UNINITIALISED;
+					break;
+				}
+			}
+		}
+		Sleep(heartbeatInterval);
+	}
+	return NULL;
+}
+
+void *webServerThread(void *arg)
+{
+	start_server();
 	return NULL;
 }
 
@@ -86,12 +155,6 @@ int runBatchScript()
 	return result;
 }
 
-void *begin_server_thread(void *arg)
-{
-	start_server();
-	return NULL;
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	// Debugging console
@@ -101,17 +164,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	printf("Starting device discovery...\n");
 
-	pthread_t senderThread, listenerThread;
-	pthread_create(&senderThread, NULL, sendPackets, NULL);
-	pthread_create(&listenerThread, NULL, listenResponses, NULL);
-	pthread_join(senderThread, NULL);
-	pthread_join(listenerThread, NULL);
+	initSocket(12345);
+
+	pthread_t senderThread, listenerThread, updaterThread, heartbeaterThread, serverThread;
+	pthread_create(&senderThread, NULL, sendThread, NULL);
+	pthread_create(&listenerThread, NULL, listenThread, NULL);
 
 	for (int i = 0; i < numDevices; i++)
 	{
-		if (devices[i].initialised)
+		if (devices[i].status == DEVICE_INITIALISED)
 		{
 			printf("Device %s found at %s:%d\n", devices[i].id, devices[i].ip, devices[i].port);
+			pthread_create(&heartbeaterThread, NULL, heartbeatThread, NULL);
+			pthread_detach(heartbeaterThread);
 		}
 		else
 		{
@@ -119,9 +184,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 	}
 
-	pthread_t server_thread;
-
-	if (pthread_create(&server_thread, NULL, begin_server_thread, NULL) != 0)
+	if (pthread_create(&serverThread, NULL, webServerThread, NULL) != 0)
 	{
 		printf("Continuing despite error with creating server thread.\n");
 	}
@@ -134,8 +197,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND hwnd = createWindow(hInstance, nCmdShow);
 	if (!hwnd)
 	{
+		running = 0;
+		pthread_join(senderThread, NULL);
+		pthread_join(listenerThread, NULL);
 		return -1;
 	}
+	pthread_create(&updaterThread, NULL, updateThread, (void *)hwnd);
 
 	hFont = CreateFont(
 			30, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
@@ -148,6 +215,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	running = 0;
+	pthread_join(senderThread, NULL);
+	pthread_join(listenerThread, NULL);
+	pthread_cancel(serverThread);
+	cleanSocket();
 
 	DeleteObject(hFont);
 }

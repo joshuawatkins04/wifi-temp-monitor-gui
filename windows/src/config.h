@@ -4,6 +4,11 @@
 #define WINDOW_TITLE "Temperature Monitor"
 #define IDI_ICON1 101
 
+typedef enum {
+  DEVICE_UNINITIALISED = 0,
+  DEVICE_INITIALISED = 1
+} DeviceStatus;
+
 typedef struct
 {
   float globalTemperature;
@@ -17,7 +22,7 @@ typedef struct
   char id[32];
   char ip[16];
   int port;
-  int initialised;
+  DeviceStatus status;
 } Device;
 
 extern Config config;

@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include <pthread.h>
 #include "udp.h"
 #include "window.h"
 #include "config.h"
 
 extern HFONT hFont;
 extern HANDLE hSerial;
+extern pthread_mutex_t configMutex;
+extern volatile int running;
 
 HWND createWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -47,45 +50,60 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hwnd, &ps);
-		SetBkColor(hdc, RGB(240, 240, 240));
-		SelectObject(hdc, hFont);
-
-		SIZE textSize;
+		HDC hdcMem = CreateCompatibleDC(hdc);
 		RECT clientRect;
 		GetClientRect(hwnd, &clientRect);
+		HBITMAP hbmMem = CreateCompatibleBitmap(hdc, clientRect.right, clientRect.bottom);
+		HGDIOBJ hOld = SelectObject(hdcMem, hbmMem);
+		FillRect(hdcMem, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+		SetBkColor(hdcMem, RGB(240, 240, 240));
+		SelectObject(hdcMem, hFont);
 
-		char buffer[128];
+		SIZE textSize;
 		int screenWidth = clientRect.right - clientRect.left;
 		int y = 10;
+		char buffer[128];
 
+		pthread_mutex_lock(&configMutex);
 		sprintf(buffer, "Packets: %d | %s", config.packetCounter, config.connectionStatus);
-		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
+		GetTextExtentPoint32(hdcMem, buffer, strlen(buffer), &textSize);
 		int x = (screenWidth - textSize.cx) / 2;
-		TextOut(hdc, x, y, buffer, strlen(buffer));
+		TextOut(hdcMem, x, y, buffer, strlen(buffer));
 
 		sprintf(buffer, "Temperature: %.2f C", config.globalTemperature);
-		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
+
+		GetTextExtentPoint32(hdcMem, buffer, strlen(buffer), &textSize);
 		x = (screenWidth - textSize.cx) / 2;
 		y += textSize.cy + 10;
-		TextOut(hdc, x, y, buffer, strlen(buffer));
+		TextOut(hdcMem, x, y, buffer, strlen(buffer));
 
 		sprintf(buffer, "Humidity: %.2f %%", config.globalHumidity);
-		GetTextExtentPoint32(hdc, buffer, strlen(buffer), &textSize);
+		pthread_mutex_unlock(&configMutex);
+		GetTextExtentPoint32(hdcMem, buffer, strlen(buffer), &textSize);
 		x = (screenWidth - textSize.cx) / 2;
 		y += textSize.cy + 10;
-		TextOut(hdc, x, y, buffer, strlen(buffer));
+		TextOut(hdcMem, x, y, buffer, strlen(buffer));
 
+		BitBlt(hdc, 0, 0, clientRect.right, clientRect.bottom, hdcMem, 0, 0, SRCCOPY);
+
+		SelectObject(hdcMem, hOld);
+		DeleteObject(hbmMem);
+		DeleteDC(hdcMem);
 		EndPaint(hwnd, &ps);
 		break;
 	}
+	case WM_ERASEBKGND:
+		return 1;
 	case WM_CREATE:
 		SetTimer(hwnd, 1, 1000, NULL);
 		break;
 	case WM_TIMER:
 		updateData();
-		InvalidateRect(hwnd, NULL, TRUE);
+		RECT updateRect = {10, 10, 330, 140};
+		InvalidateRect(hwnd, &updateRect, TRUE);
 		break;
 	case WM_DESTROY:
+		running = 0;
 		WSACleanup();
 		CloseHandle(hSerial);
 		PostQuitMessage(0);
