@@ -152,7 +152,6 @@ void listenForResponses(int port, Device devices[])
 		Sleep(100);
 	}
 	printf("Ending listenForResponses...\n");
-	closesocket(sock);
 }
 
 void readDhtData(float *temperature, float *humidity, Device devices[])
@@ -255,8 +254,6 @@ void readDhtData(float *temperature, float *humidity, Device devices[])
 	// 	closesocket(sock);
 	// 	return;
 	// }
-
-	closesocket(sock);
 }
 
 void sendPacket(const char *message, const char *ip, int port)
