@@ -57,7 +57,7 @@ void loop()
   }
 
   // Heartbeat mechanism
-  if (millis() - lastHeartbeatUpdate >= heartbeartInterval)
+  if (connected == 1 && millis() - lastHeartbeatUpdate >= heartbeartInterval)
   {
     lastHeartbeatUpdate = millis();
     receivePacket();
@@ -76,9 +76,11 @@ void loop()
       failCount = 0;
     }
   }
+  Serial.print("Connected = ");
+  Serial.println(connected);
 
   // Update and send sensor data
-  if (millis() - lastUpdate >= updateInterval)
+  if (connected == 1 && millis() - lastUpdate >= updateInterval)
   {
     checkWifiConnection();
     if (getDhtReading() == 1)
@@ -147,6 +149,7 @@ void sendPacket(const char *str, IPAddress remoteIP, unsigned int remotePort)
 
 void receivePacket()
 {
+  memset(incomingPacket, 0, sizeof(incomingPacket));
   int packetSize = udp.parsePacket();
   if (packetSize)
   {
