@@ -31,6 +31,8 @@ pthread_mutex_t devicesMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t configMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t allDevicesInitialisedMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t socketMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t sendThreadMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t sendThreadCond = PTHREAD_COND_INITIALIZER;
 pthread_cond_t allDevicesInitialisedCond = PTHREAD_COND_INITIALIZER;
 pthread_t senderThread, listenerThread, updaterThread, heartbeaterThread, serverThread;
 volatile int running = 1;
@@ -59,6 +61,8 @@ void *sendThread(void *args)
 {
 	printf("[THREAD - sendThread] Starting send thread...\n");
 	const int discoveryInterval = 5000;
+
+	pthread_mutex_lock(&sendThreadMutex);
 	while (running)
 	{
 		int uninitialisedDevices = 0;
@@ -92,8 +96,21 @@ void *sendThread(void *args)
 			}
 		}
 		pthread_mutex_unlock(&devicesMutex);
-		Sleep(discoveryInterval);
+
+		if (uninitialisedDevices == 0)
+		{
+			printf("[THREAD - sendThread] All devices initialized. Waiting for reconnection.\n");
+			pthread_cond_wait(&sendThreadCond, &sendThreadMutex);
+			printf("[THREAD - sendThread] Resuming to handle reconnection.\n");
+		}
+		else
+		{
+			pthread_mutex_unlock(&sendThreadMutex);
+			Sleep(discoveryInterval);
+			pthread_mutex_lock(&sendThreadMutex);
+		}
 	}
+	pthread_mutex_unlock(&sendThreadMutex);
 	printf("[THREAD - sendThread] Stopping sendPackets thread...\n");
 	return NULL;
 }
@@ -124,6 +141,7 @@ void *listenThread(void *args)
 				break;
 			case MSG_RECONNECT:
 				handleReconnect(buffer, &senderAddr);
+				break;
 			case MSG_TEMPERATURE_DATA:
 				handleTemperatureData(buffer, &senderAddr);
 				break;
@@ -231,10 +249,16 @@ void handleReconnect(const char *message, const struct sockaddr_in *senderAddr)
 		if (strcmp(devices[i].ip, senderIP) == 0)
 		{
 			devices[i].reconnectAttempts = 0;
+			devices[i].status = DEVICE_UNINITIALISED;
+			devices[i].failCount = 0;
 			printf("[FUNCTION - handleReconnect] Received RECONNECT from %s. Resetting reconnect attempts.\n", devices[i].id);
 		}
 	}
 	pthread_mutex_unlock(&devicesMutex);
+
+	pthread_mutex_lock(&sendThreadMutex);
+	pthread_cond_signal(&sendThreadCond);
+	pthread_mutex_unlock(&sendThreadMutex);
 }
 
 void handleTemperatureData(const char *message, const struct sockaddr_in *senderAddr)
