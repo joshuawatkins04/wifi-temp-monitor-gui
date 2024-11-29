@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <ws2tcpip.h>
 #include "udp.h"
 #include "window.h"
 #include "server.h"
@@ -41,6 +42,7 @@ typedef enum
 {
 	MSG_DISCOVERY_RESPONSE,
 	MSG_HEARTBEAT_ACK,
+	MSG_RECONNECT,
 	MSG_TEMPERATURE_DATA,
 	MSG_UNKNOWN
 } MessageType;
@@ -48,13 +50,18 @@ typedef enum
 MessageType parseMessage(const char *message);
 void handleDiscoveryResponse(const char *message, const struct sockaddr_in *senderAddr);
 void handleHeartbeatAck(const char *message, const struct sockaddr_in *senderAddr);
+void handleReconnect(const char *message, const struct sockaddr_in *senderAddr);
 void handleTemperatureData(const char *message, const struct sockaddr_in *senderAddr);
+void getIPAddressString(struct in_addr inaddr, char *ipStr, size_t ipStrLen);
+void trimMessage(char *message);
 
 void *sendThread(void *args)
 {
-	printf("Starting send thread...\n");
+	printf("[THREAD - sendThread] Starting send thread...\n");
+	const int discoveryInterval = 5000;
 	while (running)
 	{
+		int uninitialisedDevices = 0;
 		pthread_mutex_lock(&allDevicesInitialisedMutex);
 		if (allDevicesInitialised)
 		{
@@ -63,27 +70,31 @@ void *sendThread(void *args)
 		}
 		pthread_mutex_unlock(&allDevicesInitialisedMutex);
 
-		for (int i = START_IP; i <= END_IP; i++)
+		pthread_mutex_lock(&devicesMutex);
+		for (int i = 0; i < numDevices; i++)
 		{
-			char targetIP[16];
-			snprintf(targetIP, sizeof(targetIP), "%s.%d", SUBNET, i);
-			if (strcmp(targetIP, LOCAL_IP) != 0)
+			if (devices[i].status == DEVICE_UNINITIALISED && devices[i].reconnectAttempts < MAX_RECONNECT_ATTEMPTS)
 			{
-				sendPacket("DISCOVERY_REQUEST", targetIP, PORT);
-			}
-			Sleep(50);
+				uninitialisedDevices++;
+				devices[i].reconnectAttempts++;
+				printf("[THREAD - sendThread] Attempting to reconnect to device %s (attempt %d)\n", devices[i].id, devices[i].reconnectAttempts);
 
-			pthread_mutex_lock(&allDevicesInitialisedMutex);
-			if (allDevicesInitialised)
-			{
-				pthread_mutex_unlock(&allDevicesInitialisedMutex);
-				break;
+				for (int ip = START_IP; ip <= END_IP; ip++)
+				{
+					char targetIP[16];
+					snprintf(targetIP, sizeof(targetIP), "%s.%d", SUBNET, ip);
+					if (strcmp(targetIP, LOCAL_IP) != 0)
+					{
+						sendPacket("DISCOVERY_REQUEST", targetIP, PORT);
+					}
+					Sleep(10);
+				}
 			}
-			pthread_mutex_unlock(&allDevicesInitialisedMutex);
 		}
-		// Sleep(500);
+		pthread_mutex_unlock(&devicesMutex);
+		Sleep(discoveryInterval);
 	}
-	printf("Stopping sendPackets thread...\n");
+	printf("[THREAD - sendThread] Stopping sendPackets thread...\n");
 	return NULL;
 }
 
@@ -98,7 +109,10 @@ void *listenThread(void *args)
 		if (bytesRead > 0)
 		{
 			buffer[bytesRead] = '\0';
-			printf("[THREAD - listenThread] Received: %s from %s:%d\n", buffer, inet_ntoa(senderAddr.sin_addr), ntohs(senderAddr.sin_port));
+			trimMessage(buffer);
+			char senderIP[16];
+			getIPAddressString(senderAddr.sin_addr, senderIP, sizeof(senderIP));
+			printf("[THREAD - listenThread] Received: %s from %s:%d\n", buffer, senderIP, ntohs(senderAddr.sin_port));
 			MessageType msgType = parseMessage(buffer);
 			switch (msgType)
 			{
@@ -108,6 +122,8 @@ void *listenThread(void *args)
 			case MSG_HEARTBEAT_ACK:
 				handleHeartbeatAck(buffer, &senderAddr);
 				break;
+			case MSG_RECONNECT:
+				handleReconnect(buffer, &senderAddr);
 			case MSG_TEMPERATURE_DATA:
 				handleTemperatureData(buffer, &senderAddr);
 				break;
@@ -127,13 +143,17 @@ void *listenThread(void *args)
 
 MessageType parseMessage(const char *message)
 {
-	if (strcmp("ESP_RESPONSE", message) == 0 || strcmp("IOS_RESPONSE", message) == 0)
+	if (strcmp(message, "ESP_RESPONSE") == 0 || strcmp(message, "IOS_RESPONSE") == 0)
 	{
 		return MSG_DISCOVERY_RESPONSE;
 	}
-	else if (strcmp("HEARTBEAT_ACK", message) == 0)
+	else if (strcmp(message, "HEARTBEAT_ACK") == 0)
 	{
 		return MSG_HEARTBEAT_ACK;
+	}
+	else if (strcmp(message, "RECONNECT") == 0)
+	{
+		return MSG_RECONNECT;
 	}
 	else if (strchr(message, ',') != NULL)
 	{
@@ -147,17 +167,20 @@ MessageType parseMessage(const char *message)
 
 void handleDiscoveryResponse(const char *message, const struct sockaddr_in *senderAddr)
 {
+	char senderIP[16];
+	getIPAddressString(senderAddr->sin_addr, senderIP, sizeof(senderIP));
+
 	pthread_mutex_lock(&devicesMutex);
 	for (int i = 0; i < numDevices; i++)
 	{
-		if (devices[i].status == DEVICE_UNINITIALISED && strcmp(devices[i].id, message) == 0)
+		if (strcmp(devices[i].id, message) == 0)
 		{
-			strncpy(devices[i].ip, inet_ntoa(senderAddr->sin_addr), sizeof(devices[i].ip) - 1);
+			strncpy(devices[i].ip, senderIP, sizeof(devices[i].ip) - 1);
 			devices[i].ip[sizeof(devices[i].ip) - 1] = '\0';
-			// devices[i].port = ntohs(senderAddr->sin_port);
 			devices[i].port = 12345;
 			devices[i].status = DEVICE_INITIALISED;
 			devices[i].failCount = 0;
+			devices[i].reconnectAttempts = 0;
 			printf("[FUNCTION - handleDiscoveryResponse] Device %s initialised at %s:%d\n", devices[i].id, devices[i].ip, devices[i].port);
 		}
 	}
@@ -181,14 +204,34 @@ void handleDiscoveryResponse(const char *message, const struct sockaddr_in *send
 
 void handleHeartbeatAck(const char *message, const struct sockaddr_in *senderAddr)
 {
+	char senderIP[16];
+	getIPAddressString(senderAddr->sin_addr, senderIP, sizeof(senderIP));
+
 	pthread_mutex_lock(&devicesMutex);
 	for (int i = 0; i < numDevices; i++)
 	{
 		if (devices[i].status == DEVICE_INITIALISED &&
-				strcmp(devices[i].ip, inet_ntoa(senderAddr->sin_addr)) == 0)
+				strcmp(devices[i].ip, senderIP) == 0)
 		{
 			devices[i].failCount = 0;
 			printf("[FUNCTION - handleHeartbeatAck] Received HEARTBEAT_ACK from %s\n", devices[i].id);
+		}
+	}
+	pthread_mutex_unlock(&devicesMutex);
+}
+
+void handleReconnect(const char *message, const struct sockaddr_in *senderAddr)
+{
+	char senderIP[16];
+	getIPAddressString(senderAddr->sin_addr, senderIP, sizeof(senderIP));
+
+	pthread_mutex_lock(&devicesMutex);
+	for (int i = 0; i < numDevices; i++)
+	{
+		if (strcmp(devices[i].ip, senderIP) == 0)
+		{
+			devices[i].reconnectAttempts = 0;
+			printf("[FUNCTION - handleReconnect] Received RECONNECT from %s. Resetting reconnect attempts.\n", devices[i].id);
 		}
 	}
 	pthread_mutex_unlock(&devicesMutex);
@@ -210,16 +253,46 @@ void handleTemperatureData(const char *message, const struct sockaddr_in *sender
 
 	createLog(temperature, humidity);
 
+	char senderIP[16];
+	getIPAddressString(senderAddr->sin_addr, senderIP, sizeof(senderIP));
+
 	pthread_mutex_lock(&devicesMutex);
 	for (int i = 0; i < numDevices; i++)
 	{
 		if (devices[i].status == DEVICE_INITIALISED &&
-				strcmp(devices[i].ip, inet_ntoa(senderAddr->sin_addr)) != 0)
+				strcmp(devices[i].ip, senderIP) != 0)
 		{
 			sendPacket(message, devices[i].ip, devices[i].port);
 		}
 	}
 	pthread_mutex_unlock(&devicesMutex);
+}
+
+void getIPAddressString(struct in_addr inaddr, char *ipStr, size_t ipStrLen)
+{
+	unsigned char *bytes = (unsigned char *)&inaddr;
+	snprintf(ipStr, ipStrLen, "%u.%u.%u.%u", bytes[0], bytes[1], bytes[2], bytes[3]);
+}
+
+void trimMessage(char *message)
+{
+	char *start = message;
+	while (isspace((unsigned char)*start))
+	{
+		start++;
+	}
+
+	char *end = message + strlen(start) - 1;
+	while (end >= start && isspace((unsigned char)*end))
+	{
+		*end = '\0';
+		end--;
+	}
+
+	if (start != message)
+	{
+		memmove(message, start, strlen(start) + 1);
+	}
 }
 
 void *updateThread(void *args)
@@ -253,10 +326,11 @@ void *heartbeatThread(void *args)
 			printf("[THREAD - heartbeat] Sent HEARTBEAT to %s:%d\n", devices[i].ip, devices[i].port);
 
 			devices[i].failCount++;
-			if (devices[i].failCount >= 5)
+			if (devices[i].failCount >= 3)
 			{
-				printf("[THREAD - heartbeatThread] Too many missed heartbeats. Marking %s as uninitialised.\n", devices[i].status);
+				printf("[THREAD - heartbeatThread] Too many missed heartbeats. Marking %s as uninitialised.\n", devices[i].id);
 				devices[i].status = DEVICE_UNINITIALISED;
+				devices[i].reconnectAttempts = 0;
 			}
 		}
 		pthread_mutex_unlock(&devicesMutex);

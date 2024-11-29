@@ -3,6 +3,7 @@
 
 #define WINDOW_TITLE "Temperature Monitor"
 #define IDI_ICON1 101
+#define MAX_RECONNECT_ATTEMPTS 5
 
 typedef enum {
   DEVICE_UNINITIALISED = 0,
@@ -24,6 +25,7 @@ typedef struct
   int port;
   DeviceStatus status;
   int failCount;
+  int reconnectAttempts;
 } Device;
 
 extern Config config;
