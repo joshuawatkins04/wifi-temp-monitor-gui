@@ -5,9 +5,13 @@ struct ContentView: View {
 
   var body: some View {
     VStack(spacing: 20) {
+      Text("Connection Status: \(udpReceiver.connected ? "Connected" : "Disconnected")")
+        .font(.headline)
+        .padding(.top, 20)
+
       Text("Temperature:")
         .font (.title)
-        .padding(.top, 50)
+        .padding(.top, 20)
       Text(udpReceiver.temperature)
         .font(.system(size: 48))
         .bold()

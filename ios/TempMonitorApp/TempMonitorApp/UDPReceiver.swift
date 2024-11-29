@@ -4,9 +4,13 @@ import Network
 class UDPReceiver: ObservableObject {
   @Published var temperature: String = "--"
   @Published var humidity: String = "--"
+  @Published var connected: Bool = false
 
   private var listener: NWListener?
-  private var connection: NWConnection?
+  private var heartbeatTimer: Timer?
+  private var failCount: Int = 0
+  private let failThreshold: Int = 3
+  private let heartbeatInterval: TimeInterval = 3
 
   init(port: UInt16 = 12345) {
     startListening(port: port)
@@ -35,9 +39,9 @@ class UDPReceiver: ObservableObject {
         self.handleMessage(message, from: connection)
       }
       if isComplete {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-          connection.cancel()
-        }
+        self.receive(on: connection)
+      } else if error = error {
+        print("Error receiving data: \(error)")
       }
     }
   }
@@ -45,30 +49,54 @@ class UDPReceiver: ObservableObject {
   private func handleMessage(_ message: String, from connection: NWConnection) {
     let requestMessage = "DISCOVERY_REQUEST"
     let responseMessage = "IOS_RESPONSE"
-    let targetPort: NWEndpoint.Port = 12345
+    let heartbeatMessage = "HEARTBEAT"
+    let heartbeatAckMessage = "HEARTBEAT_ACK"
       
     if message == requestMessage {
       print("Discovery request received. Sending response...")
-      
-      if case let .hostPort(host, _) = connection.endpoint {
-        print("Extracted host: \(host)")
-        let newConnection = NWConnection(host: host, port: targetPort, using: .udp)
-        newConnection.start(queue: .main)
-        
-        let responseData = responseMessage.data(using: .utf8) ?? Data()
-        newConnection.send(content: responseData, completion: .contentProcessed { error in
-          if let error = error {
-            print("Failed to send response: \(error.localizedDescription)")
-          } else {
-            print("Response sent: \(responseMessage) to \(host):\(targetPort)")
-          }
-          newConnection.cancel()
-        })
-      } else {
-        print("Failed to extract host from connection endpoint.")
-      }
-    } else {
+      self.connected = true
+      self.failCount = -
+      self.startHeartbeatTimer()
+      self.sendResponse(responseMessage, to: connection)
+    } else if message == heartbeatMessage {
+      print("Heartbeat received. Sending ACK...")
+      self.failCount = 0
+      self.sendResponse(heartbeatAckMessage, to: connection)
+    } else if message.contains(",") {
       self.parseMessage(message)
+    } else {
+      print("Unknown message received: \(message)")
+    }
+  }
+
+  private func sendResponse(_ responseMessage: String, to connection: NWConnection) {
+    let responseData = responseMessage.data(using: .utf8) ?? Data()
+    connection.send(content: responseData, completion: .contentProcessed { error in
+      if let error = error {
+        print("Failed to send response: \(error.localizedDescription)")
+      } else {
+        print("Response sent: \(responseMessage)")
+      }
+    })
+  }
+
+  private func startHeartbeatTimer() {
+    self.heartbeatTimer?.invalidate()
+    self.heartbeatTimer = Timer.scheduleTimer(withTimeInterval: heartbeatInterval, repeat: true) { _ in
+      self.checkHeartbeat()
+    }
+  }
+
+  private func checkHeartbeat() {
+    self.failCount += 1
+    if self.failCount >= self.failThreshold {
+      print("No heartbeat received. Disconnected")
+      DispatchQueue.main.async {
+        self.connected = false
+        self.temperature = "--"
+        self.humidity = "--"
+      }
+      self.heartbeatTimer?.invalidate()
     }
   }
 
