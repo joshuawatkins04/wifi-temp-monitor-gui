@@ -29,6 +29,7 @@ struct ContentView: View {
     .padding()
     .onAppear {
       udpReceiver.startListening(port: 12345)
+      udpReceiver.sendReconnectMessage()
     }
   }
 }
