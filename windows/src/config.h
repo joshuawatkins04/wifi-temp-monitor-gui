@@ -23,6 +23,7 @@ typedef struct
   char ip[16];
   int port;
   DeviceStatus status;
+  int failCount;
 } Device;
 
 extern Config config;

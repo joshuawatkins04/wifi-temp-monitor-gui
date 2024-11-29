@@ -92,16 +92,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EndPaint(hwnd, &ps);
 		break;
 	}
-	case WM_ERASEBKGND:
-		return 1;
-	case WM_CREATE:
-		SetTimer(hwnd, 1, 1000, NULL);
-		break;
-	case WM_TIMER:
-		updateData();
-		RECT updateRect = {10, 10, 330, 140};
-		InvalidateRect(hwnd, &updateRect, TRUE);
-		break;
 	case WM_DESTROY:
 		running = 0;
 		WSACleanup();
@@ -110,9 +100,4 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
-void updateData()
-{
-	readDhtData(&config.globalTemperature, &config.globalHumidity, devices);
 }
