@@ -16,12 +16,14 @@ WiFiUDP udp;
 DHT dht(DHT22_PIN, DHT22);
 
 float currentTemperature, currentHumidity, lastTemperature = 0.0, lastHumidity = 0.0;
-int connected = 0;
+bool connected = false;
 char incomingPacket[255];
 unsigned long lastUpdate = 0;
 unsigned long lastHeartbeatUpdate = 0;
+unsigned long lastReconnectAttempt = 0;
 const unsigned long updateInterval = 10000;
 const unsigned long heartbeartInterval = 3000;
+const unsigned long reconnectInterval = 5000;
 int failCount = 0;
 
 void setup() 
@@ -44,46 +46,86 @@ void setup()
 
 void loop() 
 {
-  // Check if connected to Windows program
-  if (connected == 0)
-  {
-    receivePacket();
-    if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
-    {
-      sendPacket("ESP_RESPONSE", sendAddress, sendPort);
-      connected = 1;
-    }
-    delay(1000);
-  }
+  checkWifiConnection();
 
-  // Heartbeat mechanism
-  if (connected == 1 && millis() - lastHeartbeatUpdate >= heartbeartInterval)
+  if (!connected)
+  {
+    handleReconnection();
+  }
+  else
+  {
+    handleHeartbeat();
+    handleSensorData();
+  }
+}
+
+void handleReconnection()
+{
+  unsigned long currentTime = millis();
+  receivePacket();
+  if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
+  {
+    sendPacket("ESP_RESPONSE", sendAddress, sendPort);
+    connected = true;
+    failCount = 0;
+    Serial.println("Connected to server.");
+  }
+  else if (strcmp(incomingPacket, "HEARTBEAT") == 0)
+  {
+    sendPacket("HEARTBEAT_ACK", sendAddress, sendPort);
+    connected = true;
+    failCount = 0;
+    Serial.println("Sent HEARTBEAT_ACK");
+  }
+  else
+  {
+    if (currentTime - lastReconnectAttempt >= reconnectInterval)
+    {
+      lastReconnectAttempt = currentTime;
+      sendPacket("RECONNECT", sendAddress, sendPort);
+      Serial.println("Sent RECONNECT message");
+    }
+  }
+}
+
+void handleHeartbeat()
+{
+  unsigned long currentTime = millis();
+
+  if (currentTime - lastHeartbeatUpdate >= heartbeartInterval)
   {
     lastHeartbeatUpdate = millis();
     receivePacket();
-    if (strcmp(incomingPacket, "HEARTBEAT") != 0)
-    {
-      failCount++;
-      if (failCount >= 3)
-      {
-        connected = 0;
-        Serial.println("Lost connection to Windows program.");
-      }
-    }
-    else
+    if (strcmp(incomingPacket, "HEARTBEAT") == 0)
     {
       sendPacket("HEARTBEAT_ACK", sendAddress, sendPort);
       failCount = 0;
+      Serial.println("HEARTBEAT received and ACK sent.");
     }
+    else
+    {
+      failCount++;
+      Serial.print("HEARTBEAT not received. Failcount: ");
+      Serial.println(failCount);
+      if (failCount >= 3)
+      {
+        connected = false;
+        failCount = 0;
+        Serial.println("Connection lost. Attempting to reconnect.");
+      }
+    }
+    lastHeartbeatUpdate = currentTime;
   }
-  Serial.print("Connected = ");
-  Serial.println(connected);
+}
 
-  // Update and send sensor data
-  if (connected == 1 && millis() - lastUpdate >= updateInterval)
+void handleSensorData()
+{
+  unsigned long currentTime = millis();
+
+  if (currentTime - lastUpdate >= updateInterval)
   {
-    checkWifiConnection();
-    if (getDhtReading() == 1)
+    lastUpdate = currentTime;
+    if (getDhtReading())
     {
       if (absoluteValue(currentTemperature - lastTemperature) > 0.1 || absoluteValue(currentHumidity - lastHumidity) > 0.2) 
       {
@@ -107,16 +149,6 @@ void checkWifiConnection()
     {
       delay(500);
     }
-  }
-}
-
-void checkDeviceConnection()
-{
-  receivePacket();
-  if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
-  {
-    sendPacket("ESP_RESPONSE", sendAddress, sendPort);
-    connected = 1;
   }
 }
 
@@ -153,14 +185,15 @@ void receivePacket()
   int packetSize = udp.parsePacket();
   if (packetSize)
   {
-    int len = udp.read(incomingPacket, 255);
+    int len = udp.read(incomingPacket, sizeof(incomingPacket) - 1);
     if (len > 0)
     {
       incomingPacket[len] = 0;
     }
-    Serial.printf("Received %d bytes from %s, port %d\n", packetSize, udp.remoteIP().toString().c_str(), udp.remotePort());
-    Serial.printf("UDP packet contents: %s\n", incomingPacket);
-    return;
+    Serial.printf("Received %d bytes from %s:%d - %s\n", packetSize, sendAddress, sendPort, incomingPacket);
   }
-  Serial.println("Packet not received.");
+  else
+  {
+    incomingPacket[0] = '\0';
+  }
 }
