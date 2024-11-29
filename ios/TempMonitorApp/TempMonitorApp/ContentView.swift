@@ -25,11 +25,33 @@ struct ContentView: View {
         .foregroundColor(.green)
 
       Spacer()
+
+      Button(action: {
+      udpReceiver.startMulticastListening() // Start multicast discovery to connect devices
+      }) {
+        Text("Start Discovery")
+          .padding()
+          .background(Color.blue)
+          .foregroundColor(.white)
+          .cornerRadius(10)
+      }
+      .padding(.bottom, 20)
+
+      Button(action: {
+        udpReceiver.sendReconnectMessage() // Send reconnect message
+      }) {
+        Text("Send RECONNECT")
+          .padding()
+          .background(Color.green)
+          .foregroundColor(.white)
+          .cornerRadius(10)
+      }
+      .padding(.bottom, 20)
     }
     .padding()
     .onAppear {
       udpReceiver.startListening(port: 12345)
-      udpReceiver.sendReconnectMessage()
+      udpReceiver.startMulticastListening()
     }
   }
 }
