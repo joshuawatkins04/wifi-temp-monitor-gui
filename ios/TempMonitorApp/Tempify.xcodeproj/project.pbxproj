@@ -24,25 +24,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		085484302CF2EDB800149195 /* TempMonitorApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TempMonitorApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		085484402CF2EDBA00149195 /* TempMonitorAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TempMonitorAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0854844A2CF2EDBA00149195 /* TempMonitorAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TempMonitorAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		085484302CF2EDB800149195 /* Tempify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tempify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		085484402CF2EDBA00149195 /* TempifyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TempifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0854844A2CF2EDBA00149195 /* TempifyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TempifyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		085484322CF2EDB800149195 /* TempMonitorApp */ = {
+		085484322CF2EDB800149195 /* Tempify */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TempMonitorApp;
+			path = Tempify;
 			sourceTree = "<group>";
 		};
-		085484432CF2EDBA00149195 /* TempMonitorAppTests */ = {
+		085484432CF2EDBA00149195 /* TempifyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TempMonitorAppTests;
+			path = TempifyTests;
 			sourceTree = "<group>";
 		};
-		0854844D2CF2EDBA00149195 /* TempMonitorAppUITests */ = {
+		0854844D2CF2EDBA00149195 /* TempifyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TempMonitorAppUITests;
+			path = TempifyUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		085484272CF2EDB800149195 = {
 			isa = PBXGroup;
 			children = (
-				085484322CF2EDB800149195 /* TempMonitorApp */,
-				085484432CF2EDBA00149195 /* TempMonitorAppTests */,
-				0854844D2CF2EDBA00149195 /* TempMonitorAppUITests */,
+				085484322CF2EDB800149195 /* Tempify */,
+				085484432CF2EDBA00149195 /* TempifyTests */,
+				0854844D2CF2EDBA00149195 /* TempifyUITests */,
 				085484312CF2EDB800149195 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +85,9 @@
 		085484312CF2EDB800149195 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				085484302CF2EDB800149195 /* TempMonitorApp.app */,
-				085484402CF2EDBA00149195 /* TempMonitorAppTests.xctest */,
-				0854844A2CF2EDBA00149195 /* TempMonitorAppUITests.xctest */,
+				085484302CF2EDB800149195 /* Tempify.app */,
+				085484402CF2EDBA00149195 /* TempifyTests.xctest */,
+				0854844A2CF2EDBA00149195 /* TempifyUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0854842F2CF2EDB800149195 /* TempMonitorApp */ = {
+		0854842F2CF2EDB800149195 /* Tempify */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 085484542CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorApp" */;
+			buildConfigurationList = 085484542CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "Tempify" */;
 			buildPhases = (
 				0854842C2CF2EDB800149195 /* Sources */,
 				0854842D2CF2EDB800149195 /* Frameworks */,
@@ -108,18 +108,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				085484322CF2EDB800149195 /* TempMonitorApp */,
+				085484322CF2EDB800149195 /* Tempify */,
 			);
-			name = TempMonitorApp;
+			name = Tempify;
 			packageProductDependencies = (
 			);
 			productName = TempMonitorApp;
-			productReference = 085484302CF2EDB800149195 /* TempMonitorApp.app */;
+			productReference = 085484302CF2EDB800149195 /* Tempify.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0854843F2CF2EDBA00149195 /* TempMonitorAppTests */ = {
+		0854843F2CF2EDBA00149195 /* TempifyTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 085484572CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppTests" */;
+			buildConfigurationList = 085484572CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempifyTests" */;
 			buildPhases = (
 				0854843C2CF2EDBA00149195 /* Sources */,
 				0854843D2CF2EDBA00149195 /* Frameworks */,
@@ -131,18 +131,18 @@
 				085484422CF2EDBA00149195 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				085484432CF2EDBA00149195 /* TempMonitorAppTests */,
+				085484432CF2EDBA00149195 /* TempifyTests */,
 			);
-			name = TempMonitorAppTests;
+			name = TempifyTests;
 			packageProductDependencies = (
 			);
 			productName = TempMonitorAppTests;
-			productReference = 085484402CF2EDBA00149195 /* TempMonitorAppTests.xctest */;
+			productReference = 085484402CF2EDBA00149195 /* TempifyTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		085484492CF2EDBA00149195 /* TempMonitorAppUITests */ = {
+		085484492CF2EDBA00149195 /* TempifyUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0854845A2CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppUITests" */;
+			buildConfigurationList = 0854845A2CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempifyUITests" */;
 			buildPhases = (
 				085484462CF2EDBA00149195 /* Sources */,
 				085484472CF2EDBA00149195 /* Frameworks */,
@@ -154,13 +154,13 @@
 				0854844C2CF2EDBA00149195 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				0854844D2CF2EDBA00149195 /* TempMonitorAppUITests */,
+				0854844D2CF2EDBA00149195 /* TempifyUITests */,
 			);
-			name = TempMonitorAppUITests;
+			name = TempifyUITests;
 			packageProductDependencies = (
 			);
 			productName = TempMonitorAppUITests;
-			productReference = 0854844A2CF2EDBA00149195 /* TempMonitorAppUITests.xctest */;
+			productReference = 0854844A2CF2EDBA00149195 /* TempifyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0854842B2CF2EDB800149195 /* Build configuration list for PBXProject "TempMonitorApp" */;
+			buildConfigurationList = 0854842B2CF2EDB800149195 /* Build configuration list for PBXProject "Tempify" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0854842F2CF2EDB800149195 /* TempMonitorApp */,
-				0854843F2CF2EDBA00149195 /* TempMonitorAppTests */,
-				085484492CF2EDBA00149195 /* TempMonitorAppUITests */,
+				0854842F2CF2EDB800149195 /* Tempify */,
+				0854843F2CF2EDBA00149195 /* TempifyTests */,
+				085484492CF2EDBA00149195 /* TempifyUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		085484422CF2EDBA00149195 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0854842F2CF2EDB800149195 /* TempMonitorApp */;
+			target = 0854842F2CF2EDB800149195 /* Tempify */;
 			targetProxy = 085484412CF2EDBA00149195 /* PBXContainerItemProxy */;
 		};
 		0854844C2CF2EDBA00149195 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0854842F2CF2EDB800149195 /* TempMonitorApp */;
+			target = 0854842F2CF2EDB800149195 /* Tempify */;
 			targetProxy = 0854844B2CF2EDBA00149195 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -395,7 +395,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TempMonitorApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Tempify/Preview Content\"";
+				DEVELOPMENT_TEAM = FF3Z5S6PXD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -408,7 +409,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorApp;
+				PRODUCT_BUNDLE_IDENTIFIER = tempify.Tempify;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -423,7 +424,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TempMonitorApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Tempify/Preview Content\"";
+				DEVELOPMENT_TEAM = FF3Z5S6PXD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -436,7 +438,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = tempmonitor.TempMonitorApp;
+				PRODUCT_BUNDLE_IDENTIFIER = tempify.Tempify;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -458,7 +460,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TempMonitorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TempMonitorApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tempify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tempify";
 			};
 			name = Debug;
 		};
@@ -476,7 +478,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TempMonitorApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TempMonitorApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tempify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tempify";
 			};
 			name = Release;
 		};
@@ -515,7 +517,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0854842B2CF2EDB800149195 /* Build configuration list for PBXProject "TempMonitorApp" */ = {
+		0854842B2CF2EDB800149195 /* Build configuration list for PBXProject "Tempify" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				085484522CF2EDBA00149195 /* Debug */,
@@ -524,7 +526,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		085484542CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorApp" */ = {
+		085484542CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "Tempify" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				085484552CF2EDBA00149195 /* Debug */,
@@ -533,7 +535,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		085484572CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppTests" */ = {
+		085484572CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempifyTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				085484582CF2EDBA00149195 /* Debug */,
@@ -542,7 +544,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0854845A2CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempMonitorAppUITests" */ = {
+		0854845A2CF2EDBA00149195 /* Build configuration list for PBXNativeTarget "TempifyUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0854845B2CF2EDBA00149195 /* Debug */,

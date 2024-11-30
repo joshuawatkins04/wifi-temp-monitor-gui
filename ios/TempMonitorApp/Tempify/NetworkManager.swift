@@ -5,9 +5,14 @@ class UDPReceiver: ObservableObject {
   @Published var temperature: String = "--"
   @Published var humidity: String = "--"
   @Published var connected: Bool = false
+  @Published var packetsReceived: Int = 0
+  @Published var packetsSent: Int = 0
 
   private var listener: NWListener?
   private var heartbeatTimer: Timer?
+  private var connectivityTimer: Timer?
+  private var lastPacketReceived: Date = Date()
+  private let timeoutInterval: TimeInterval = 10
   private var failCount: Int = 0
   private let failThreshold: Int = 3
   private let heartbeatInterval: TimeInterval = 3
@@ -18,6 +23,7 @@ class UDPReceiver: ObservableObject {
 
   init(port: UInt16 = 12345) {
     startListening(port: port)
+    startConnectivityTimer()
   }
 
   func startListening(port: UInt16) {
@@ -42,10 +48,37 @@ class UDPReceiver: ObservableObject {
       print("Failed to start listener: \(error)")
     }
   }
+  
+  private func startConnectivityTimer() {
+    connectivityTimer?.invalidate()
+    connectivityTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+      self?.checkConnectivity()
+    }
+  }
+  
+  private func checkConnectivity() {
+    let timeSinceLastPacket = Date().timeIntervalSince(lastPacketReceived)
+    
+    if timeSinceLastPacket > timeoutInterval {
+      if self.connected {
+        print("No packets received within \(timeoutInterval) seconds. Disconnecting...")
+        DispatchQueue.main.async {
+          self.connected = false
+          self.temperature = "--"
+          self.humidity = "--"
+        }
+      }
+    }
+    lastPacketReceived = Date() + timeoutInterval
+    print("Timer reset")
+  }
 
   private func receive(on connection: NWConnection) {
     connection.receiveMessage { (data, context, isComplete, error) in
       if let data = data, let message = String(data: data, encoding: .utf8) {
+        self.lastPacketReceived = Date()
+        self.packetsReceived += 1
+        self.connected = true
         let remoteEndpoint = connection.endpoint
         print("Received from \(remoteEndpoint): \(message)")
         self.handleMessage(message, from: connection)
@@ -99,6 +132,7 @@ class UDPReceiver: ObservableObject {
           if let error = error {
             print("Failed to send response: \(error.localizedDescription)")
           } else {
+            self.packetsSent += 1
             print("Response sent: \(responseMessage) to \(endpoint)")
           }
           connection.cancel()
@@ -116,14 +150,24 @@ class UDPReceiver: ObservableObject {
   func sendEspConnectMessage() {
     let targetIP = "192.168.0.171"
     let targetPort: UInt16 = 12345
-    let responseMessage = "IOS_CONNECT"
+    var responseMessage = ""
+    
+    if connected {
+      responseMessage = "DATA_REQ"
+    } else {
+      responseMessage = "IOS_CONNECT"
+    }
+    
+    let host = NWEndpoint.Host(targetIP)
 
     print("Sending response to \(targetIP): \(responseMessage)")
     
-    let port = NWEndpoint.Port(rawValue: targetPort)
-    guard let udpPort = port
+    guard let port = NWEndpoint.Port(rawValue: targetPort) else {
+      print("Invalid port number: \(targetPort)")
+      return
+    }
     
-    let connection = NWConnection(to: endpoint, port: udpPort, using: .udp)
+    let connection = NWConnection(host: host, port: port, using: .udp)
     
     connection.stateUpdateHandler = { newState in
       switch newState {
@@ -133,6 +177,7 @@ class UDPReceiver: ObservableObject {
           if let error = error {
             print("Failed to send response: \(error.localizedDescription)")
           } else {
+            self.packetsSent += 1
             print("Response sent: \(responseMessage) to \(targetIP):\(targetPort)")
           }
           connection.cancel()
