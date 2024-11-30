@@ -26,6 +26,13 @@ const unsigned long heartbeartInterval = 3000;
 const unsigned long reconnectInterval = 5000;
 int failCount = 0;
 
+const IPAddress multicastAddress(224, 0, 0, 251);
+const unsigned int multicastPort = 5353;
+IPAddress iosAppIP;
+unsigned int iosAppPort;
+bool iosAppConnected = false;
+int iosAppFailCount = 0;
+
 void setup() 
 {
   Serial.begin(9600);
@@ -42,33 +49,67 @@ void setup()
   }
 
   udp.begin(sendPort);
+  // udp.beginMulticast(WiFi.localIP(), multicastAddress, multicastPort);
 }
 
 void loop() 
 {
   checkWifiConnection();
+  receivePacket();
 
-  if (!connected)
-  {
+  // if (!connected)
+  // {
     handleReconnection();
-  }
-  else
-  {
-    handleHeartbeat();
+  // }
+  // else
+  // {
+    // handleHeartbeat();
+    handleDataRequest();
     handleSensorData();
+  // }
+}
+
+void handleDataRequest()
+{
+  if (strcmp(incomingPacket, "IOS_CONNECT") == 0)
+  {
+    connected = true;
+    iosAppConnected = true;
+    iosAppIP = udp.remoteIP();
+    iosAppPort = 12345;
+    failCount = 0;
+    requestSensorData();
+    Serial.println("Connected to IOS app via IOS_CONNECT packet");
+  }
+  else if (strcmp(incomingPacket, "DATA_REQ") == 0)
+  {
+    requestSensorData();
   }
 }
 
 void handleReconnection()
 {
-  unsigned long currentTime = millis();
-  receivePacket();
-  if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
+  if (!connected)
   {
-    sendPacket("ESP_RESPONSE", sendAddress, sendPort);
+  unsigned long currentTime = millis();
+  if (currentTime - lastReconnectAttempt >= reconnectInterval)
+  {
+    lastReconnectAttempt = currentTime;
+    // sendPacket("DISCOVERY_REQUEST", multicastAddress, multicastPort);
+    // Serial.println("Sent DISCOVERY_REQUEST message to multicast group");
+  }
+  // receivePacket();
+  if (strcmp(incomingPacket, "IOS_CONNECT") == 0)
+  {
     connected = true;
+    iosAppConnected = true;
+    iosAppIP = udp.remoteIP();
+    iosAppPort = 12345;
     failCount = 0;
-    Serial.println("Connected to server.");
+    Serial.print("Connected to IOS app via IOS_CONNECT packet. IP: ");
+    Serial.print(iosAppIP);
+    Serial.print(" Port: ");
+    Serial.println(iosAppPort);
   }
   else if (strcmp(incomingPacket, "HEARTBEAT") == 0)
   {
@@ -76,6 +117,21 @@ void handleReconnection()
     connected = true;
     failCount = 0;
     Serial.println("Sent HEARTBEAT_ACK");
+  }
+  else if (strcmp(incomingPacket, "IOS_RESPONSE") == 0)
+  {
+    iosAppConnected = true;
+    iosAppFailCount = 0;
+    iosAppIP = udp.remoteIP();
+    iosAppPort = 12345;
+    Serial.println("Connected to ios app.");
+  }
+  else if (strcmp(incomingPacket, "DISCOVERY_REQUEST") == 0)
+  {
+    sendPacket("ESP_RESPONSE", sendAddress, sendPort);
+    connected = true;
+    failCount = 0;
+    Serial.println("Connected to server.");
   }
   else
   {
@@ -85,6 +141,8 @@ void handleReconnection()
       sendPacket("RECONNECT", sendAddress, sendPort);
       Serial.println("Sent RECONNECT message");
     }
+  }
+
   }
 }
 
@@ -133,11 +191,32 @@ void handleSensorData()
         udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
         udp.endPacket();
 
+        if (iosAppConnected)
+        {
+          udp.beginPacket(iosAppIP, iosAppPort);
+          udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
+          udp.endPacket();
+        }
+
         lastTemperature = currentTemperature;
         lastHumidity = currentHumidity;
       }
     }
   }
+}
+
+void requestSensorData()
+{
+  if (getDhtReading())
+  {
+    Serial.println("Getting reading");
+    lastTemperature = currentTemperature;
+    lastHumidity = currentHumidity;
+  }
+  udp.beginPacket(iosAppIP, iosAppPort);
+  udp.printf("%.2f,%.2f", currentTemperature, currentHumidity);
+  udp.endPacket();
+  Serial.printf("%.2f,%.2f", currentTemperature, currentHumidity);
 }
 
 void checkWifiConnection()
