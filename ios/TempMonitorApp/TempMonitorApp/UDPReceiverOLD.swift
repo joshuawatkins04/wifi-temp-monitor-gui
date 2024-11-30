@@ -112,26 +112,30 @@ class UDPReceiver: ObservableObject {
     }
     connection.start(queue: .main)
   }
-  
-  func sendReconnectMessage() {
-    guard let serverHost = self.serverHost, let serverPort = self.serverPort else {
-      print("Server host or port is not available. Cannot send RECONNECT message.")
-      return
-    }
-    let endpoint = NWEndpoint.hostPort(host: serverHost, port: serverPort)
-    let connection = NWConnection(to: endpoint, using: .udp)
+
+  func sendEspConnectMessage() {
+    let targetIP = "192.168.0.171"
+    let targetPort: UInt16 = 12345
+    let responseMessage = "IOS_CONNECT"
+
+    print("Sending response to \(targetIP): \(responseMessage)")
+    
+    let port = NWEndpoint.Port(rawValue: targetPort)
+    guard let udpPort = port
+    
+    let connection = NWConnection(to: endpoint, port: udpPort, using: .udp)
     
     connection.stateUpdateHandler = { newState in
       switch newState {
       case .ready:
-        let message = "RECONNECT"
-        let data = message.data(using: .utf8)
-        connection.send(content: data, completion: .contentProcessed { error in
+        let responseData = responseMessage.data(using: .utf8) ?? Data()
+        connection.send(content: responseData, completion: .contentProcessed { error in
           if let error = error {
-            print("Failed to send RECONNECT message: \(error)")
+            print("Failed to send response: \(error.localizedDescription)")
           } else {
-            print("RECONNECT message sent.")
+            print("Response sent: \(responseMessage) to \(targetIP):\(targetPort)")
           }
+          connection.cancel()
         })
       case .failed(let error):
         print("Connection failed: \(error)")
@@ -142,6 +146,36 @@ class UDPReceiver: ObservableObject {
     }
     connection.start(queue: .main)
   }
+  
+  // func sendReconnectMessage() {
+  //   guard let serverHost = self.serverHost, let serverPort = self.serverPort else {
+  //     print("Server host or port is not available. Cannot send RECONNECT message.")
+  //     return
+  //   }
+  //   let endpoint = NWEndpoint.hostPort(host: serverHost, port: serverPort)
+  //   let connection = NWConnection(to: endpoint, using: .udp)
+    
+  //   connection.stateUpdateHandler = { newState in
+  //     switch newState {
+  //     case .ready:
+  //       let message = "RECONNECT"
+  //       let data = message.data(using: .utf8)
+  //       connection.send(content: data, completion: .contentProcessed { error in
+  //         if let error = error {
+  //           print("Failed to send RECONNECT message: \(error)")
+  //         } else {
+  //           print("RECONNECT message sent.")
+  //         }
+  //       })
+  //     case .failed(let error):
+  //       print("Connection failed: \(error)")
+  //       connection.cancel()
+  //     default:
+  //       break
+  //     }
+  //   }
+  //   connection.start(queue: .main)
+  // }
 
   private func startHeartbeatTimer() {
     self.heartbeatTimer?.invalidate()

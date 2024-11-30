@@ -26,21 +26,21 @@ struct ContentView: View {
 
       Spacer()
 
-      Button(action: {
-      udpReceiver.startMulticastListening() // Start multicast discovery to connect devices
-      }) {
-        Text("Start Discovery")
-          .padding()
-          .background(Color.blue)
-          .foregroundColor(.white)
-          .cornerRadius(10)
-      }
-      .padding(.bottom, 20)
+      // Button(action: {
+      //   udpReceiver.startMulticastListening() // Start multicast discovery to connect devices
+      // }) {
+      //   Text("Start Discovery")
+      //     .padding()
+      //     .background(Color.blue)
+      //     .foregroundColor(.white)
+      //     .cornerRadius(10)
+      // }
+      // .padding(.bottom, 20)
 
       Button(action: {
-        udpReceiver.sendReconnectMessage() // Send reconnect message
+        udpReceiver.sendEspConnectMessage() // Send reconnect message
       }) {
-        Text("Send RECONNECT")
+        Text("Connect to ESP")
           .padding()
           .background(Color.green)
           .foregroundColor(.white)
@@ -51,7 +51,7 @@ struct ContentView: View {
     .padding()
     .onAppear {
       udpReceiver.startListening(port: 12345)
-      udpReceiver.startMulticastListening()
+      // udpReceiver.startMulticastListening()
     }
   }
 }
